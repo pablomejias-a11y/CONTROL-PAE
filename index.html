@@ -286,10 +286,8 @@ function iniciarEscaner() {
       detenerCamara();
 
 
-      // MOSTRAR SIGUIENTE DE INMEDIATO
-      esperandoSiguiente = true;
-
-      document.getElementById("btnSiguiente").style.display = "block";
+      // NO MOSTRAMOS SIGUIENTE TODAVÍA.
+      // PRIMERO DEBE TERMINAR EL REGISTRO.
 
 
       // PROCESAR EL CÓDIGO
@@ -441,7 +439,7 @@ function procesarCodigo(codigo) {
 
 
   mostrarResultado(
-    "⏳ PROCESANDO...",
+    "⏳ REGISTRANDO...",
     "Código recibido: " + codigo +
     "\n\nEspere un momento.",
     "esperando"
@@ -454,6 +452,7 @@ function procesarCodigo(codigo) {
 
   window[callbackName] = function(respuesta) {
 
+    // MOSTRAR EL RESULTADO REAL
     mostrarResultado(
       respuesta.titulo,
       respuesta.mensaje,
@@ -461,12 +460,13 @@ function procesarCodigo(codigo) {
     );
 
 
+    // EL REGISTRO YA TERMINÓ
     procesando = false;
 
-
-    // SIGUIENTE YA ESTÁ VISIBLE
     esperandoSiguiente = true;
 
+
+    // AHORA SÍ MOSTRAMOS SIGUIENTE
     document.getElementById("btnSiguiente").style.display = "block";
 
 
@@ -510,6 +510,8 @@ function procesarCodigo(codigo) {
     esperandoSiguiente = true;
 
 
+    // TAMBIÉN PERMITIMOS CONTINUAR
+    // DESPUÉS DE UN ERROR
     document.getElementById("btnSiguiente").style.display = "block";
 
 
