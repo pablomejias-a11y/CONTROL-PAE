@@ -1,279 +1,421 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  >
 
-<meta charset="UTF-8">
+  <title>Control PAE</title>
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://unpkg.com/html5-qrcode"></script>
 
-<title>Control PAE</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f2f4f7;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #222;
+    }
 
-<style>
+    .contenedor {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 18px;
+    }
 
-* {
-  box-sizing: border-box;
-}
+    .titulo {
+      text-align: center;
+      font-size: 26px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
 
-body {
-  font-family: Arial, sans-serif;
-  background: #f4f4f4;
-  margin: 0;
-  padding: 20px;
-  text-align: center;
-}
+    .subtitulo {
+      text-align: center;
+      font-size: 15px;
+      color: #666;
+      margin-bottom: 20px;
+    }
 
-.contenedor {
-  max-width: 500px;
-  margin: auto;
-  background: white;
-  padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-}
+    .servicio {
+      background: white;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
 
-h1 {
-  margin: 5px 0;
-  font-size: 27px;
-}
+    .servicio label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
 
-.subtitulo {
-  color: #555;
-  margin-bottom: 20px;
-}
+    select {
+      width: 100%;
+      padding: 13px;
+      font-size: 17px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: white;
+    }
 
-label {
-  display: block;
-  text-align: left;
-  font-weight: bold;
-  margin-top: 15px;
-  margin-bottom: 6px;
-}
+    #reader {
+      width: 100%;
+      background: #000;
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
 
-select {
-  width: 100%;
-  padding: 14px;
-  font-size: 18px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  background: white;
-}
+    .estado {
+      text-align: center;
+      font-size: 15px;
+      color: #666;
+      margin: 10px 0;
+      min-height: 22px;
+    }
 
-#reader {
-  width: 100%;
-  margin-top: 20px;
-}
+    .resultado {
+      display: none;
+      background: white;
+      border-radius: 14px;
+      padding: 22px 18px;
+      margin-top: 15px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+      text-align: center;
+    }
 
-#resultado {
-  margin-top: 20px;
-  padding: 20px;
-  border-radius: 12px;
-  font-size: 19px;
-  font-weight: bold;
-  white-space: pre-line;
-  min-height: 80px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-}
+    .resultado-titulo {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 18px;
+    }
 
-.esperando {
-  background: #eeeeee;
-  color: #333;
-}
+    .resultado-nombre {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 18px;
+      line-height: 1.3;
+    }
 
-.exito {
-  background: #d9f7df;
-  color: #176b2c;
-}
+    .resultado-dato {
+      font-size: 17px;
+      margin: 8px 0;
+      line-height: 1.4;
+    }
 
-.error {
-  background: #ffdede;
-  color: #a40000;
-}
+    .resultado-dato strong {
+      font-weight: bold;
+    }
 
-.advertencia {
-  background: #fff0c2;
-  color: #795500;
-}
+    .siguiente {
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      background: #1976d2;
+      color: white;
+    }
 
-button {
-  width: 100%;
-  margin-top: 15px;
-  padding: 18px;
-  font-size: 20px;
-  font-weight: bold;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  background: #333;
-  color: white;
-}
+    .siguiente:active {
+      transform: scale(0.98);
+    }
 
-button:active {
-  opacity: 0.7;
-}
+    .oculto {
+      display: none !important;
+    }
 
-#btnDetener {
-  background: #a40000;
-  display: none;
-}
-
-#btnSiguiente {
-  background: #176b2c;
-  display: none;
-  font-size: 22px;
-  padding: 20px;
-}
-
-</style>
-
+    .error {
+      color: #b00020;
+    }
+  </style>
 </head>
-
 
 <body>
 
-<div class="contenedor">
+  <div class="contenedor">
 
-<h1>🍽️ CONTROL PAE</h1>
+    <div class="titulo">
+      CONTROL PAE
+    </div>
 
-<div class="subtitulo">
-Liceo Industrial Benjamín Franklin
-</div>
+    <div class="subtitulo">
+      Liceo Industrial Benjamín Franklin
+    </div>
 
+    <div class="servicio" id="bloqueServicio">
 
-<label for="servicio">
-SERVICIO
-</label>
+      <label for="servicio">
+        Servicio
+      </label>
 
+      <select id="servicio">
+        <option value="DESAYUNO">
+          DESAYUNO
+        </option>
 
-<select id="servicio">
+        <option value="ALMUERZO">
+          ALMUERZO
+        </option>
+      </select>
 
-<option value="ALMUERZO">
-ALMUERZO
-</option>
+    </div>
 
-<option value="DESAYUNO">
-DESAYUNO
-</option>
+    <div id="lector">
 
-</select>
+      <div id="reader"></div>
 
+      <div
+        id="estado"
+        class="estado"
+      >
+        Iniciando cámara...
+      </div>
 
-<button
-id="btnIniciar"
-onclick="iniciarEscaner()">
+    </div>
 
-📷 INICIAR ESCÁNER
+    <div
+      id="resultado"
+      class="resultado"
+    >
 
-</button>
+      <div
+        id="resultadoTitulo"
+        class="resultado-titulo"
+      ></div>
 
+      <div
+        id="resultadoNombre"
+        class="resultado-nombre"
+      ></div>
 
-<button
-id="btnDetener"
-onclick="detenerEscaner()">
+      <div
+        id="resultadoServicio"
+        class="resultado-dato"
+      ></div>
 
-⛔ DETENER ESCÁNER
+      <div
+        id="resultadoFecha"
+        class="resultado-dato"
+      ></div>
 
-</button>
+      <div
+        id="resultadoHora"
+        class="resultado-dato"
+      ></div>
 
+      <button
+        id="btnSiguiente"
+        class="siguiente"
+        onclick="siguiente()"
+      >
+        ➡️ SIGUIENTE
+      </button>
 
-<div id="reader"></div>
+    </div>
 
-
-<div
-id="resultado"
-class="esperando">
-
-📷 LISTO PARA ESCANEAR
-
-</div>
-
-
-<button
-id="btnSiguiente"
-onclick="siguienteEscaneo()">
-
-➡️ SIGUIENTE
-
-</button>
-
-</div>
-
-
-<script>
-
-
-// =====================================================
-// GOOGLE APPS SCRIPT
-// =====================================================
-
-const URL_APPS_SCRIPT =
-"https://script.google.com/macros/s/AKfycbxPnTIJWHBdZuflY6QJFPqnJjLL2UrY1BOafTNhVOrHo3WuDXh5d3AU8Qe0NsMkhMKY/exec";
-
-
-// =====================================================
-// VARIABLES
-// =====================================================
-
-let scanner = null;
-
-let escanerActivo = false;
-
-let procesando = false;
-
-let esperandoSiguiente = false;
+  </div>
 
 
-// =====================================================
-// INICIAR ESCÁNER
-// =====================================================
+  <script>
 
-function iniciarEscaner() {
+    /******************************************************
+     * CONFIGURACIÓN
+     ******************************************************/
 
-  if (escanerActivo) {
-    return;
-  }
-
-  procesando = false;
-
-  esperandoSiguiente = false;
-
-  document.getElementById("btnSiguiente").style.display = "none";
-
-  document.getElementById("btnIniciar").style.display = "none";
-
-  document.getElementById("btnDetener").style.display = "block";
+    const URL_APPS_SCRIPT =
+      "https://script.google.com/macros/s/AKfycbxPnTIJWHBdZuflY6QJFPqnJjLL2UrY1BOafTNhVOrHo3WuDXh5d3AU8Qe0NsMkhMKY/exec";
 
 
-  mostrarResultado(
-    "📷 ACTIVANDO CÁMARA...",
-    "Espera un momento.",
-    "esperando"
-  );
+    let html5QrCode = null;
+
+    let procesando = false;
 
 
-  scanner = new Html5Qrcode("reader");
+    /******************************************************
+     * INICIAR ESCÁNER
+     ******************************************************/
+
+    function iniciarEscaner() {
+
+      procesando = false;
+
+      document
+        .getElementById("estado")
+        .textContent =
+          "Apunta la cámara al código PAE.";
+
+      document
+        .getElementById("resultado")
+        .style.display = "none";
+
+      document
+        .getElementById("lector")
+        .classList.remove("oculto");
+
+      document
+        .getElementById("bloqueServicio")
+        .classList.remove("oculto");
 
 
-  scanner.start(
+      html5QrCode =
+        new Html5Qrcode("reader");
 
-    {
-      facingMode: "environment"
-    },
 
-    {
-      fps: 10,
-      qrbox: {
-        width: 280,
-        height: 150
+      const config = {
+
+        fps: 10,
+
+        qrbox: function(
+          viewfinderWidth,
+          viewfinderHeight
+        ) {
+
+          const size =
+            Math.min(
+              viewfinderWidth,
+              viewfinderHeight
+            ) * 0.70;
+
+          return {
+            width: size,
+            height: size
+          };
+
+        },
+
+        aspectRatio: 1.0
+
+      };
+
+
+      html5QrCode
+        .start(
+
+          {
+            facingMode: {
+              exact: "environment"
+            }
+          },
+
+          config,
+
+          onScanSuccess,
+
+          onScanFailure
+
+        )
+
+        .catch(function(error) {
+
+          console.error(
+            "Error cámara:",
+            error
+          );
+
+          /*
+           * Segundo intento si el dispositivo
+           * no acepta facingMode exact.
+           */
+
+          iniciarCamaraAlternativa();
+
+        });
+
+    }
+
+
+    /******************************************************
+     * CÁMARA ALTERNATIVA
+     ******************************************************/
+
+    function iniciarCamaraAlternativa() {
+
+      if (html5QrCode) {
+
+        try {
+
+          html5QrCode.clear();
+
+        } catch (e) {}
+
       }
-    },
 
-    function(codigo) {
+
+      html5QrCode =
+        new Html5Qrcode("reader");
+
+
+      const config = {
+
+        fps: 10,
+
+        qrbox: {
+          width: 250,
+          height: 250
+        }
+
+      };
+
+
+      html5QrCode
+        .start(
+
+          {
+            facingMode: "environment"
+          },
+
+          config,
+
+          onScanSuccess,
+
+          onScanFailure
+
+        )
+
+        .catch(function(error) {
+
+          console.error(
+            error
+          );
+
+          document
+            .getElementById("estado")
+            .innerHTML =
+              '<span class="error">' +
+              'No se pudo iniciar la cámara.' +
+              '</span>';
+
+        });
+
+    }
+
+
+    /******************************************************
+     * CUANDO DETECTA UN CÓDIGO
+     ******************************************************/
+
+    function onScanSuccess(
+      decodedText
+    ) {
+
+      /*
+       * Evita múltiples lecturas
+       * del mismo código.
+       */
 
       if (procesando) {
         return;
@@ -282,341 +424,578 @@ function iniciarEscaner() {
       procesando = true;
 
 
-      // DETENER LA CÁMARA INMEDIATAMENTE
+      const codigo =
+        String(
+          decodedText || ""
+        )
+          .trim()
+          .toUpperCase();
+
+
+      const servicio =
+        document
+          .getElementById("servicio")
+          .value;
+
+
+      console.log(
+        "Código detectado:",
+        codigo
+      );
+
+      console.log(
+        "Servicio:",
+        servicio
+      );
+
+
+      /*
+       * DETENER CÁMARA
+       */
+
       detenerCamara();
 
 
-      // NO MOSTRAMOS SIGUIENTE TODAVÍA.
-      // PRIMERO DEBE TERMINAR EL REGISTRO.
+      document
+        .getElementById("estado")
+        .textContent =
+          "Registrando...";
 
 
-      // PROCESAR EL CÓDIGO
-      procesarCodigo(codigo);
+      /*
+       * ENVIAR A APPS SCRIPT
+       */
 
-    },
-
-    function(error) {
-
-      // Errores normales de lectura.
-      // No hacemos nada.
+      enviarRegistro(
+        codigo,
+        servicio
+      );
 
     }
 
-  )
 
-  .then(function() {
+    /******************************************************
+     * EVITAR RUIDO DE ESCANEO
+     ******************************************************/
 
-    escanerActivo = true;
+    function onScanFailure(error) {
+
+      /*
+       * No hacemos nada.
+       * html5-qrcode llama constantemente
+       * a esta función cuando todavía no
+       * encuentra un código.
+       */
+
+    }
 
 
-    mostrarResultado(
-      "📷 LISTO PARA ESCANEAR",
-      "Apunta al código PAE.",
-      "esperando"
+    /******************************************************
+     * DETENER CÁMARA
+     ******************************************************/
+
+    function detenerCamara() {
+
+      if (!html5QrCode) {
+        return;
+      }
+
+
+      html5QrCode
+        .stop()
+
+        .then(function() {
+
+          console.log(
+            "Cámara detenida."
+          );
+
+        })
+
+        .catch(function(error) {
+
+          console.log(
+            "La cámara ya estaba detenida.",
+            error
+          );
+
+        });
+
+    }
+
+
+    /******************************************************
+     * ENVIAR REGISTRO
+     ******************************************************/
+
+    function enviarRegistro(
+      codigo,
+      servicio
+    ) {
+
+      /*
+       * Creamos un nombre de función
+       * JSONP único.
+       */
+
+      const callbackName =
+        "respuestaPAE_" +
+        Date.now();
+
+
+      window[callbackName] =
+        function(respuesta) {
+
+          /*
+           * Eliminar función temporal.
+           */
+
+          try {
+
+            delete window[
+              callbackName
+            ];
+
+          } catch (e) {}
+
+
+          /*
+           * Mostrar respuesta.
+           */
+
+          mostrarResultado(
+            respuesta
+          );
+
+
+          /*
+           * Eliminar script JSONP.
+           */
+
+          if (
+            script &&
+            script.parentNode
+          ) {
+
+            script.parentNode
+              .removeChild(
+                script
+              );
+
+          }
+
+        };
+
+
+      const url =
+        URL_APPS_SCRIPT +
+        "?codigo=" +
+        encodeURIComponent(
+          codigo
+        ) +
+        "&servicio=" +
+        encodeURIComponent(
+          servicio
+        ) +
+        "&callback=" +
+        encodeURIComponent(
+          callbackName
+        );
+
+
+      const script =
+        document.createElement(
+          "script"
+        );
+
+
+      script.src =
+        url;
+
+
+      script.onerror =
+        function() {
+
+          try {
+
+            delete window[
+              callbackName
+            ];
+
+          } catch (e) {}
+
+
+          mostrarError(
+            "No fue posible comunicarse con el sistema."
+          );
+
+        };
+
+
+      document
+        .body
+        .appendChild(
+          script
+        );
+
+    }
+
+
+    /******************************************************
+     * MOSTRAR RESULTADO
+     ******************************************************/
+
+    function mostrarResultado(
+      respuesta
+    ) {
+
+      document
+        .getElementById("lector")
+        .classList.add("oculto");
+
+      document
+        .getElementById("bloqueServicio")
+        .classList.add("oculto");
+
+
+      const resultado =
+        document.getElementById(
+          "resultado"
+        );
+
+      resultado.style.display =
+        "block";
+
+
+      const titulo =
+        document.getElementById(
+          "resultadoTitulo"
+        );
+
+      const nombre =
+        document.getElementById(
+          "resultadoNombre"
+        );
+
+      const servicio =
+        document.getElementById(
+          "resultadoServicio"
+        );
+
+      const fecha =
+        document.getElementById(
+          "resultadoFecha"
+        );
+
+      const hora =
+        document.getElementById(
+          "resultadoHora"
+        );
+
+
+      /*
+       * ERROR
+       */
+
+      if (
+        !respuesta ||
+        respuesta.ok === false &&
+        !respuesta.duplicado
+      ) {
+
+        titulo.textContent =
+          respuesta &&
+          respuesta.titulo
+            ? respuesta.titulo
+            : "❌ ERROR";
+
+        nombre.textContent =
+          respuesta &&
+          respuesta.mensaje
+            ? respuesta.mensaje
+            : "No fue posible registrar.";
+
+        servicio.innerHTML =
+          "";
+
+        fecha.innerHTML =
+          "";
+
+        hora.innerHTML =
+          "";
+
+        return;
+
+      }
+
+
+      /*
+       * DUPLICADO
+       */
+
+      if (
+        respuesta.duplicado === true
+      ) {
+
+        titulo.textContent =
+          "⚠️ ESTUDIANTE YA REGISTRADO";
+
+
+        nombre.textContent =
+          respuesta.estudiante ||
+          respuesta.mensaje ||
+          "";
+
+
+        servicio.innerHTML =
+          "<strong>Servicio:</strong> " +
+          escaparHtml(
+            respuesta.servicio ||
+            ""
+          );
+
+
+        fecha.innerHTML =
+          "<strong>Fecha:</strong> " +
+          escaparHtml(
+            respuesta.fecha ||
+            ""
+          );
+
+
+        hora.innerHTML =
+          "<strong>Hora del registro:</strong> " +
+          escaparHtml(
+            respuesta.hora ||
+            ""
+          );
+
+
+        return;
+
+      }
+
+
+      /*
+       * REGISTRO CORRECTO
+       */
+
+      titulo.textContent =
+        "✅ ESTUDIANTE REGISTRADO";
+
+
+      nombre.textContent =
+        respuesta.estudiante ||
+        respuesta.mensaje ||
+        "";
+
+
+      servicio.innerHTML =
+        "<strong>Servicio:</strong> " +
+        escaparHtml(
+          respuesta.servicio ||
+          ""
+        );
+
+
+      fecha.innerHTML =
+        "<strong>Fecha:</strong> " +
+        escaparHtml(
+          respuesta.fecha ||
+          ""
+        );
+
+
+      hora.innerHTML =
+        "<strong>Hora:</strong> " +
+        escaparHtml(
+          respuesta.hora ||
+          ""
+        );
+
+    }
+
+
+    /******************************************************
+     * MOSTRAR ERROR DE COMUNICACIÓN
+     ******************************************************/
+
+    function mostrarError(
+      mensaje
+    ) {
+
+      detenerCamara();
+
+
+      document
+        .getElementById("lector")
+        .classList.add("oculto");
+
+      document
+        .getElementById("bloqueServicio")
+        .classList.add("oculto");
+
+
+      const resultado =
+        document.getElementById(
+          "resultado"
+        );
+
+      resultado.style.display =
+        "block";
+
+
+      document
+        .getElementById(
+          "resultadoTitulo"
+        )
+        .textContent =
+          "❌ ERROR";
+
+
+      document
+        .getElementById(
+          "resultadoNombre"
+        )
+        .textContent =
+          mensaje;
+
+
+      document
+        .getElementById(
+          "resultadoServicio"
+        )
+        .innerHTML =
+          "";
+
+      document
+        .getElementById(
+          "resultadoFecha"
+        )
+        .innerHTML =
+          "";
+
+      document
+        .getElementById(
+          "resultadoHora"
+        )
+        .innerHTML =
+          "";
+
+    }
+
+
+    /******************************************************
+     * SIGUIENTE
+     ******************************************************/
+
+    function siguiente() {
+
+      document
+        .getElementById(
+          "resultado"
+        )
+        .style.display =
+          "none";
+
+
+      document
+        .getElementById(
+          "lector"
+        )
+        .classList.remove(
+          "oculto"
+        );
+
+
+      document
+        .getElementById(
+          "bloqueServicio"
+        )
+        .classList.remove(
+          "oculto"
+        );
+
+
+      document
+        .getElementById(
+          "estado"
+        )
+        .textContent =
+          "Iniciando cámara...";
+
+
+      procesando =
+        false;
+
+
+      /*
+       * Pequeña pausa para que
+       * la cámara anterior termine
+       * completamente.
+       */
+
+      setTimeout(
+        function() {
+
+          iniciarEscaner();
+
+        },
+        300
+      );
+
+    }
+
+
+    /******************************************************
+     * SEGURIDAD PARA TEXTO HTML
+     ******************************************************/
+
+    function escaparHtml(
+      texto
+    ) {
+
+      return String(
+        texto || ""
+      )
+        .replace(
+          /&/g,
+          "&amp;"
+        )
+        .replace(
+          /</g,
+          "&lt;"
+        )
+        .replace(
+          />/g,
+          "&gt;"
+        )
+        .replace(
+          /"/g,
+          "&quot;"
+        )
+        .replace(
+          /'/g,
+          "&#039;"
+        );
+
+    }
+
+
+    /******************************************************
+     * INICIAR AL CARGAR
+     ******************************************************/
+
+    window.addEventListener(
+      "load",
+      function() {
+
+        iniciarEscaner();
+
+      }
     );
 
-  })
-
-  .catch(function(error) {
-
-    escanerActivo = false;
-
-    procesando = false;
-
-
-    document.getElementById("btnIniciar").style.display = "block";
-
-    document.getElementById("btnDetener").style.display = "none";
-
-
-    mostrarResultado(
-      "❌ ERROR AL ACTIVAR LA CÁMARA",
-      error.message || error,
-      "error"
-    );
-
-  });
-
-}
-
-
-// =====================================================
-// DETENER CÁMARA
-// =====================================================
-
-function detenerCamara() {
-
-  if (!scanner) {
-    escanerActivo = false;
-    return;
-  }
-
-
-  if (!escanerActivo) {
-    return;
-  }
-
-
-  scanner.stop()
-
-  .then(function() {
-
-    scanner.clear();
-
-    escanerActivo = false;
-
-    document.getElementById("btnDetener").style.display = "none";
-
-  })
-
-  .catch(function(error) {
-
-    console.log(error);
-
-    escanerActivo = false;
-
-  });
-
-}
-
-
-// =====================================================
-// DETENER MANUALMENTE
-// =====================================================
-
-function detenerEscaner() {
-
-  if (!scanner || !escanerActivo) {
-    return;
-  }
-
-
-  scanner.stop()
-
-  .then(function() {
-
-    scanner.clear();
-
-    escanerActivo = false;
-
-    procesando = false;
-
-    esperandoSiguiente = false;
-
-
-    document.getElementById("btnIniciar").style.display = "block";
-
-    document.getElementById("btnDetener").style.display = "none";
-
-    document.getElementById("btnSiguiente").style.display = "none";
-
-
-    mostrarResultado(
-      "📷 ESCÁNER DETENIDO",
-      "Presiona INICIAR ESCÁNER para continuar.",
-      "esperando"
-    );
-
-  })
-
-  .catch(function(error) {
-
-    console.log(error);
-
-  });
-
-}
-
-
-// =====================================================
-// PROCESAR CÓDIGO EN APPS SCRIPT
-// =====================================================
-
-function procesarCodigo(codigo) {
-
-  const servicio =
-    document.getElementById("servicio").value;
-
-
-  mostrarResultado(
-    "⏳ REGISTRANDO...",
-    "Código recibido: " + codigo +
-    "\n\nEspere un momento.",
-    "esperando"
-  );
-
-
-  const callbackName =
-    "respuestaPAE_" + Date.now();
-
-
-  window[callbackName] = function(respuesta) {
-
-    // MOSTRAR EL RESULTADO REAL
-    mostrarResultado(
-      respuesta.titulo,
-      respuesta.mensaje,
-      respuesta.tipo
-    );
-
-
-    // EL REGISTRO YA TERMINÓ
-    procesando = false;
-
-    esperandoSiguiente = true;
-
-
-    // AHORA SÍ MOSTRAMOS SIGUIENTE
-    document.getElementById("btnSiguiente").style.display = "block";
-
-
-    delete window[callbackName];
-
-  };
-
-
-  const script =
-    document.createElement("script");
-
-
-  script.src =
-    URL_APPS_SCRIPT +
-    "?codigo=" +
-    encodeURIComponent(codigo) +
-    "&servicio=" +
-    encodeURIComponent(servicio) +
-    "&callback=" +
-    callbackName;
-
-
-  script.onload = function() {
-
-    // La respuesta real la maneja el callback.
-
-  };
-
-
-  script.onerror = function() {
-
-    mostrarResultado(
-      "❌ ERROR DE CONEXIÓN",
-      "No se pudo conectar con el sistema PAE.",
-      "error"
-    );
-
-
-    procesando = false;
-
-    esperandoSiguiente = true;
-
-
-    // TAMBIÉN PERMITIMOS CONTINUAR
-    // DESPUÉS DE UN ERROR
-    document.getElementById("btnSiguiente").style.display = "block";
-
-
-    delete window[callbackName];
-
-  };
-
-
-  document.body.appendChild(script);
-
-}
-
-
-// =====================================================
-// SIGUIENTE
-// =====================================================
-
-function siguienteEscaneo() {
-
-  if (!esperandoSiguiente) {
-    return;
-  }
-
-
-  esperandoSiguiente = false;
-
-  procesando = false;
-
-
-  document.getElementById("btnSiguiente").style.display = "none";
-
-
-  mostrarResultado(
-    "📷 PREPARANDO ESCÁNER...",
-    "Apunta al siguiente código.",
-    "esperando"
-  );
-
-
-  setTimeout(function() {
-
-    iniciarEscaner();
-
-  }, 300);
-
-}
-
-
-// =====================================================
-// MOSTRAR RESULTADO
-// =====================================================
-
-function mostrarResultado(
-  titulo,
-  mensaje,
-  tipo
-) {
-
-  const resultado =
-    document.getElementById("resultado");
-
-
-  resultado.className = tipo;
-
-
-  resultado.innerText =
-    titulo +
-    (mensaje
-      ? "\n\n" + mensaje
-      : "");
-
-}
-
-
-// =====================================================
-// CAMBIO DE SERVICIO
-// =====================================================
-
-document.getElementById("servicio")
-.addEventListener("change", function() {
-
-  if (escanerActivo) {
-    detenerEscaner();
-  }
-
-
-  procesando = false;
-
-  esperandoSiguiente = false;
-
-
-  document.getElementById("btnSiguiente").style.display = "none";
-
-
-  mostrarResultado(
-    "📷 LISTO PARA ESCANEAR",
-    "Presiona INICIAR ESCÁNER.",
-    "esperando"
-  );
-
-});
-
-
-</script>
+  </script>
 
 </body>
-
 </html>
