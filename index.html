@@ -3,139 +3,133 @@
 
 <head>
 
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Control PAE</title>
+<title>Control PAE</title>
 
-  <script src="https://unpkg.com/html5-qrcode"
-          type="text/javascript">
-  </script>
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
-  <style>
+<style>
 
-    * {
-      box-sizing: border-box;
-    }
+* {
+  box-sizing: border-box;
+}
 
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      margin: 0;
-      padding: 20px;
-      text-align: center;
-    }
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+  margin: 0;
+  padding: 20px;
+  text-align: center;
+}
 
-    .contenedor {
-      max-width: 500px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-    }
+.contenedor {
+  max-width: 500px;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+}
 
-    h1 {
-      margin: 5px 0;
-      font-size: 27px;
-    }
+h1 {
+  margin: 5px 0;
+  font-size: 27px;
+}
 
-    .subtitulo {
-      color: #555;
-      margin-bottom: 20px;
-    }
+.subtitulo {
+  color: #555;
+  margin-bottom: 20px;
+}
 
-    label {
-      display: block;
-      text-align: left;
-      font-weight: bold;
-      margin-top: 15px;
-      margin-bottom: 6px;
-    }
+label {
+  display: block;
+  text-align: left;
+  font-weight: bold;
+  margin-top: 15px;
+  margin-bottom: 6px;
+}
 
-    select {
-      width: 100%;
-      padding: 14px;
-      font-size: 18px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      background: white;
-    }
+select {
+  width: 100%;
+  padding: 14px;
+  font-size: 18px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: white;
+}
 
-    #reader {
-      width: 100%;
-      margin-top: 20px;
-    }
+#reader {
+  width: 100%;
+  margin-top: 20px;
+}
 
-    #resultado {
-      margin-top: 20px;
-      padding: 20px;
-      border-radius: 12px;
-      font-size: 19px;
-      font-weight: bold;
-      white-space: pre-line;
-      min-height: 80px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-    }
+#resultado {
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 12px;
+  font-size: 19px;
+  font-weight: bold;
+  white-space: pre-line;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
 
-    .esperando {
-      background: #eeeeee;
-      color: #333;
-    }
+.esperando {
+  background: #eeeeee;
+  color: #333;
+}
 
-    .exito {
-      background: #d9f7df;
-      color: #176b2c;
-    }
+.exito {
+  background: #d9f7df;
+  color: #176b2c;
+}
 
-    .error {
-      background: #ffdede;
-      color: #a40000;
-    }
+.error {
+  background: #ffdede;
+  color: #a40000;
+}
 
-    .advertencia {
-      background: #fff0c2;
-      color: #795500;
-    }
+.advertencia {
+  background: #fff0c2;
+  color: #795500;
+}
 
-    button {
-      width: 100%;
-      margin-top: 15px;
-      padding: 18px;
-      font-size: 20px;
-      font-weight: bold;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      background: #333;
-      color: white;
-    }
+button {
+  width: 100%;
+  margin-top: 15px;
+  padding: 18px;
+  font-size: 20px;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #333;
+  color: white;
+}
 
-    button:active {
-      opacity: 0.7;
-    }
+button:active {
+  opacity: 0.7;
+}
 
-    #btnDetener {
-      background: #a40000;
-      display: none;
-    }
+#btnDetener {
+  background: #a40000;
+  display: none;
+}
 
-    #btnSiguiente {
-      background: #176b2c;
-      display: none;
-    }
+#btnSiguiente {
+  background: #176b2c;
+  display: none;
+  font-size: 22px;
+  padding: 20px;
+}
 
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-  </style>
+</style>
 
 </head>
 
@@ -144,67 +138,68 @@
 
 <div class="contenedor">
 
-  <h1>🍽️ CONTROL PAE</h1>
+<h1>🍽️ CONTROL PAE</h1>
 
-  <div class="subtitulo">
-    Liceo Industrial Benjamín Franklin
-  </div>
-
-
-  <label for="servicio">
-    SERVICIO
-  </label>
+<div class="subtitulo">
+Liceo Industrial Benjamín Franklin
+</div>
 
 
-  <select id="servicio">
-
-    <option value="ALMUERZO">
-      ALMUERZO
-    </option>
-
-    <option value="DESAYUNO">
-      DESAYUNO
-    </option>
-
-  </select>
+<label for="servicio">
+SERVICIO
+</label>
 
 
-  <button
-    id="btnIniciar"
-    onclick="iniciarEscaner()">
+<select id="servicio">
 
-    📷 INICIAR ESCÁNER
+<option value="ALMUERZO">
+ALMUERZO
+</option>
 
-  </button>
+<option value="DESAYUNO">
+DESAYUNO
+</option>
 
-
-  <button
-    id="btnDetener"
-    onclick="detenerEscaner()">
-
-    ⛔ DETENER ESCÁNER
-
-  </button>
+</select>
 
 
-  <div id="reader"></div>
+<button
+id="btnIniciar"
+onclick="iniciarEscaner()">
+
+📷 INICIAR ESCÁNER
+
+</button>
 
 
-  <div id="resultado"
-       class="esperando">
+<button
+id="btnDetener"
+onclick="detenerEscaner()">
 
-    📷 LISTO PARA ESCANEAR
+⛔ DETENER ESCÁNER
 
-  </div>
+</button>
 
 
-  <button
-    id="btnSiguiente"
-    onclick="siguienteEscaneo()">
+<div id="reader"></div>
 
-    ➡️ SIGUIENTE
 
-  </button>
+<div
+id="resultado"
+class="esperando">
+
+📷 LISTO PARA ESCANEAR
+
+</div>
+
+
+<button
+id="btnSiguiente"
+onclick="siguienteEscaneo()">
+
+➡️ SIGUIENTE
+
+</button>
 
 </div>
 
@@ -212,36 +207,46 @@
 <script>
 
 
-// ======================================================
-// URL DE GOOGLE APPS SCRIPT
-// ======================================================
+// =====================================================
+// GOOGLE APPS SCRIPT
+// =====================================================
 
 const URL_APPS_SCRIPT =
-  "https://script.google.com/macros/s/AKfycbxPnTIJWHBdZuflY6QJFPqnJjLL2UrY1BOafTNhVOrHo3WuDXh5d3AU8Qe0NsMkhMKY/exec";
+"https://script.google.com/macros/s/AKfycbxPnTIJWHBdZuflY6QJFPqnJjLL2UrY1BOafTNhVOrHo3WuDXh5d3AU8Qe0NsMkhMKY/exec";
 
 
-// ======================================================
+// =====================================================
 // VARIABLES
-// ======================================================
+// =====================================================
 
 let scanner = null;
 
-let procesando = false;
-
 let escanerActivo = false;
+
+let procesando = false;
 
 let esperandoSiguiente = false;
 
 
-// ======================================================
+// =====================================================
 // INICIAR ESCÁNER
-// ======================================================
+// =====================================================
 
 function iniciarEscaner() {
 
-  if (escanerActivo || procesando || esperandoSiguiente) {
+  if (escanerActivo) {
     return;
   }
+
+  procesando = false;
+
+  esperandoSiguiente = false;
+
+  document.getElementById("btnSiguiente").style.display = "none";
+
+  document.getElementById("btnIniciar").style.display = "none";
+
+  document.getElementById("btnDetener").style.display = "block";
 
 
   mostrarResultado(
@@ -251,11 +256,7 @@ function iniciarEscaner() {
   );
 
 
-  ocultarBotonSiguiente();
-
-
-  scanner =
-    new Html5Qrcode("reader");
+  scanner = new Html5Qrcode("reader");
 
 
   scanner.start(
@@ -266,49 +267,48 @@ function iniciarEscaner() {
 
     {
       fps: 10,
-
       qrbox: {
         width: 280,
         height: 150
       }
     },
 
-    codigo => {
+    function(codigo) {
 
-      if (procesando || esperandoSiguiente) {
+      if (procesando) {
         return;
       }
 
       procesando = true;
 
-      // DETENER INMEDIATAMENTE LA CÁMARA
-      detenerCamaraDespuesDeLectura();
 
+      // DETENER LA CÁMARA INMEDIATAMENTE
+      detenerCamara();
+
+
+      // MOSTRAR SIGUIENTE DE INMEDIATO
+      esperandoSiguiente = true;
+
+      document.getElementById("btnSiguiente").style.display = "block";
+
+
+      // PROCESAR EL CÓDIGO
       procesarCodigo(codigo);
 
     },
 
-    error => {
+    function(error) {
 
-      // Ignorar errores normales de lectura
+      // Errores normales de lectura.
+      // No hacemos nada.
 
     }
 
   )
 
-  .then(() => {
+  .then(function() {
 
     escanerActivo = true;
-
-
-    document.getElementById(
-      "btnIniciar"
-    ).style.display = "none";
-
-
-    document.getElementById(
-      "btnDetener"
-    ).style.display = "block";
 
 
     mostrarResultado(
@@ -319,71 +319,72 @@ function iniciarEscaner() {
 
   })
 
-  .catch(error => {
+  .catch(function(error) {
 
     escanerActivo = false;
 
     procesando = false;
 
 
+    document.getElementById("btnIniciar").style.display = "block";
+
+    document.getElementById("btnDetener").style.display = "none";
+
+
     mostrarResultado(
-      "❌ NO SE PUDO ACTIVAR LA CÁMARA",
-      error.name + "\n" + error.message,
+      "❌ ERROR AL ACTIVAR LA CÁMARA",
+      error.message || error,
       "error"
     );
-
-    console.log(error);
 
   });
 
 }
 
 
-// ======================================================
-// DETENER CÁMARA DESPUÉS DE LEER
-// ======================================================
+// =====================================================
+// DETENER CÁMARA
+// =====================================================
 
-function detenerCamaraDespuesDeLectura() {
+function detenerCamara() {
 
-  if (!scanner || !escanerActivo) {
+  if (!scanner) {
+    escanerActivo = false;
+    return;
+  }
+
+
+  if (!escanerActivo) {
     return;
   }
 
 
   scanner.stop()
 
-    .then(() => {
+  .then(function() {
 
-      scanner.clear();
+    scanner.clear();
 
-      escanerActivo = false;
+    escanerActivo = false;
 
+    document.getElementById("btnDetener").style.display = "none";
 
-      document.getElementById(
-        "btnDetener"
-      ).style.display = "none";
+  })
 
+  .catch(function(error) {
 
-      document.getElementById(
-        "btnIniciar"
-      ).style.display = "none";
+    console.log(error);
 
-    })
+    escanerActivo = false;
 
-    .catch(error => {
-
-      console.log(error);
-
-      escanerActivo = false;
-
-    });
+  });
 
 }
 
 
-// ======================================================
-// DETENER ESCÁNER MANUALMENTE
-// ======================================================
+// =====================================================
+// DETENER MANUALMENTE
+// =====================================================
 
 function detenerEscaner() {
 
@@ -394,100 +395,84 @@ function detenerEscaner() {
 
   scanner.stop()
 
-    .then(() => {
+  .then(function() {
 
-      scanner.clear();
+    scanner.clear();
 
-      escanerActivo = false;
+    escanerActivo = false;
 
-      procesando = false;
+    procesando = false;
 
-      esperandoSiguiente = false;
-
-
-      document.getElementById(
-        "btnIniciar"
-      ).style.display = "block";
+    esperandoSiguiente = false;
 
 
-      document.getElementById(
-        "btnDetener"
-      ).style.display = "none";
+    document.getElementById("btnIniciar").style.display = "block";
+
+    document.getElementById("btnDetener").style.display = "none";
+
+    document.getElementById("btnSiguiente").style.display = "none";
 
 
-      ocultarBotonSiguiente();
+    mostrarResultado(
+      "📷 ESCÁNER DETENIDO",
+      "Presiona INICIAR ESCÁNER para continuar.",
+      "esperando"
+    );
 
+  })
 
-      mostrarResultado(
-        "📷 ESCÁNER DETENIDO",
-        "Presiona INICIAR ESCÁNER para continuar.",
-        "esperando"
-      );
+  .catch(function(error) {
 
-    })
+    console.log(error);
 
-    .catch(error => {
-
-      console.log(error);
-
-    });
+  });
 
 }
 
 
-// ======================================================
-// PROCESAR CÓDIGO
-// ======================================================
+// =====================================================
+// PROCESAR CÓDIGO EN APPS SCRIPT
+// =====================================================
 
 function procesarCodigo(codigo) {
 
   const servicio =
-    document.getElementById(
-      "servicio"
-    ).value;
+    document.getElementById("servicio").value;
 
 
   mostrarResultado(
-    "⏳ PROCESANDO ESCANEO...",
-    "Código detectado: " + codigo +
+    "⏳ PROCESANDO...",
+    "Código recibido: " + codigo +
     "\n\nEspere un momento.",
     "esperando"
   );
 
 
   const callbackName =
-    "respuestaPAE_" +
-    Date.now();
+    "respuestaPAE_" + Date.now();
 
 
-  window[callbackName] =
-    function(respuesta) {
+  window[callbackName] = function(respuesta) {
+
+    mostrarResultado(
+      respuesta.titulo,
+      respuesta.mensaje,
+      respuesta.tipo
+    );
 
 
-      mostrarResultado(
-
-        respuesta.titulo,
-
-        respuesta.mensaje,
-
-        respuesta.tipo
-
-      );
+    procesando = false;
 
 
-      // Ya terminó el procesamiento
-      procesando = false;
+    // SIGUIENTE YA ESTÁ VISIBLE
+    esperandoSiguiente = true;
 
-      esperandoSiguiente = true;
-
-
-      // Mostrar botón SIGUIENTE
-      mostrarBotonSiguiente();
+    document.getElementById("btnSiguiente").style.display = "block";
 
 
-      delete window[callbackName];
+    delete window[callbackName];
 
-    };
+  };
 
 
   const script =
@@ -504,17 +489,19 @@ function procesarCodigo(codigo) {
     callbackName;
 
 
+  script.onload = function() {
+
+    // La respuesta real la maneja el callback.
+
+  };
+
+
   script.onerror = function() {
 
-
     mostrarResultado(
-
       "❌ ERROR DE CONEXIÓN",
-
       "No se pudo conectar con el sistema PAE.",
-
       "error"
-
     );
 
 
@@ -523,7 +510,7 @@ function procesarCodigo(codigo) {
     esperandoSiguiente = true;
 
 
-    mostrarBotonSiguiente();
+    document.getElementById("btnSiguiente").style.display = "block";
 
 
     delete window[callbackName];
@@ -536,9 +523,9 @@ function procesarCodigo(codigo) {
 }
 
 
-// ======================================================
-// BOTÓN SIGUIENTE
-// ======================================================
+// =====================================================
+// SIGUIENTE
+// =====================================================
 
 function siguienteEscaneo() {
 
@@ -552,20 +539,17 @@ function siguienteEscaneo() {
   procesando = false;
 
 
-  ocultarBotonSiguiente();
+  document.getElementById("btnSiguiente").style.display = "none";
 
 
   mostrarResultado(
-    "📷 PREPARANDO SIGUIENTE ESCANEO...",
-    "Espere un momento.",
+    "📷 PREPARANDO ESCÁNER...",
+    "Apunta al siguiente código.",
     "esperando"
   );
 
 
-  // Pequeña pausa para asegurar que
-  // la cámara anterior esté completamente liberada
-
-  setTimeout(() => {
+  setTimeout(function() {
 
     iniciarEscaner();
 
@@ -574,56 +558,18 @@ function siguienteEscaneo() {
 }
 
 
-// ======================================================
-// MOSTRAR BOTÓN SIGUIENTE
-// ======================================================
-
-function mostrarBotonSiguiente() {
-
-  const boton =
-    document.getElementById(
-      "btnSiguiente"
-    );
-
-  boton.style.display = "block";
-
-}
-
-
-// ======================================================
-// OCULTAR BOTÓN SIGUIENTE
-// ======================================================
-
-function ocultarBotonSiguiente() {
-
-  const boton =
-    document.getElementById(
-      "btnSiguiente"
-    );
-
-  boton.style.display = "none";
-
-}
-
-
-// ======================================================
+// =====================================================
 // MOSTRAR RESULTADO
-// ======================================================
+// =====================================================
 
 function mostrarResultado(
-
   titulo,
-
   mensaje,
-
   tipo
-
 ) {
 
   const resultado =
-    document.getElementById(
-      "resultado"
-    );
+    document.getElementById("resultado");
 
 
   resultado.className = tipo;
@@ -638,37 +584,33 @@ function mostrarResultado(
 }
 
 
-// ======================================================
-// INICIO
-// ======================================================
+// =====================================================
+// CAMBIO DE SERVICIO
+// =====================================================
 
-document.getElementById(
-  "servicio"
-).addEventListener(
-  "change",
-  function() {
+document.getElementById("servicio")
+.addEventListener("change", function() {
 
-    if (escanerActivo) {
-
-      detenerEscaner();
-
-    }
-
-    procesando = false;
-
-    esperandoSiguiente = false;
-
-    ocultarBotonSiguiente();
-
-
-    mostrarResultado(
-      "📷 LISTO PARA ESCANEAR",
-      "Presiona INICIAR ESCÁNER.",
-      "esperando"
-    );
-
+  if (escanerActivo) {
+    detenerEscaner();
   }
-);
+
+
+  procesando = false;
+
+  esperandoSiguiente = false;
+
+
+  document.getElementById("btnSiguiente").style.display = "none";
+
+
+  mostrarResultado(
+    "📷 LISTO PARA ESCANEAR",
+    "Presiona INICIAR ESCÁNER.",
+    "esperando"
+  );
+
+});
 
 
 </script>
