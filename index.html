@@ -76,7 +76,11 @@
       font-size: 19px;
       font-weight: bold;
       white-space: pre-line;
-      min-height: 60px;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
     }
 
     .esperando {
@@ -102,8 +106,8 @@
     button {
       width: 100%;
       margin-top: 15px;
-      padding: 16px;
-      font-size: 19px;
+      padding: 18px;
+      font-size: 20px;
       font-weight: bold;
       border: none;
       border-radius: 10px;
@@ -119,6 +123,16 @@
     #btnDetener {
       background: #a40000;
       display: none;
+    }
+
+    #btnSiguiente {
+      background: #176b2c;
+      display: none;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
   </style>
@@ -185,9 +199,10 @@
 
 
   <button
-    onclick="reiniciarEscaner()">
+    id="btnSiguiente"
+    onclick="siguienteEscaneo()">
 
-    🔄 ESCANEAR NUEVAMENTE
+    ➡️ SIGUIENTE
 
   </button>
 
@@ -215,6 +230,8 @@ let procesando = false;
 
 let escanerActivo = false;
 
+let esperandoSiguiente = false;
+
 
 // ======================================================
 // INICIAR ESCÁNER
@@ -222,7 +239,7 @@ let escanerActivo = false;
 
 function iniciarEscaner() {
 
-  if (escanerActivo) {
+  if (escanerActivo || procesando || esperandoSiguiente) {
     return;
   }
 
@@ -232,6 +249,9 @@ function iniciarEscaner() {
     "Espera un momento.",
     "esperando"
   );
+
+
+  ocultarBotonSiguiente();
 
 
   scanner =
@@ -255,11 +275,14 @@ function iniciarEscaner() {
 
     codigo => {
 
-      if (procesando) {
+      if (procesando || esperandoSiguiente) {
         return;
       }
 
       procesando = true;
+
+      // DETENER INMEDIATAMENTE LA CÁMARA
+      detenerCamaraDespuesDeLectura();
 
       procesarCodigo(codigo);
 
@@ -267,7 +290,7 @@ function iniciarEscaner() {
 
     error => {
 
-      // Ignorar errores normales
+      // Ignorar errores normales de lectura
 
     }
 
@@ -300,6 +323,8 @@ function iniciarEscaner() {
 
     escanerActivo = false;
 
+    procesando = false;
+
 
     mostrarResultado(
       "❌ NO SE PUDO ACTIVAR LA CÁMARA",
@@ -315,7 +340,49 @@ function iniciarEscaner() {
 
 
 // ======================================================
-// DETENER ESCÁNER
+// DETENER CÁMARA DESPUÉS DE LEER
+// ======================================================
+
+function detenerCamaraDespuesDeLectura() {
+
+  if (!scanner || !escanerActivo) {
+    return;
+  }
+
+
+  scanner.stop()
+
+    .then(() => {
+
+      scanner.clear();
+
+      escanerActivo = false;
+
+
+      document.getElementById(
+        "btnDetener"
+      ).style.display = "none";
+
+
+      document.getElementById(
+        "btnIniciar"
+      ).style.display = "none";
+
+    })
+
+    .catch(error => {
+
+      console.log(error);
+
+      escanerActivo = false;
+
+    });
+
+}
+
+
+// ======================================================
+// DETENER ESCÁNER MANUALMENTE
 // ======================================================
 
 function detenerEscaner() {
@@ -335,6 +402,8 @@ function detenerEscaner() {
 
       procesando = false;
 
+      esperandoSiguiente = false;
+
 
       document.getElementById(
         "btnIniciar"
@@ -344,6 +413,9 @@ function detenerEscaner() {
       document.getElementById(
         "btnDetener"
       ).style.display = "none";
+
+
+      ocultarBotonSiguiente();
 
 
       mostrarResultado(
@@ -376,8 +448,9 @@ function procesarCodigo(codigo) {
 
 
   mostrarResultado(
-    "⏳ PROCESANDO...",
-    codigo,
+    "⏳ PROCESANDO ESCANEO...",
+    "Código detectado: " + codigo +
+    "\n\nEspere un momento.",
     "esperando"
   );
 
@@ -402,11 +475,14 @@ function procesarCodigo(codigo) {
       );
 
 
-      setTimeout(() => {
+      // Ya terminó el procesamiento
+      procesando = false;
 
-        procesando = false;
+      esperandoSiguiente = true;
 
-      }, 1500);
+
+      // Mostrar botón SIGUIENTE
+      mostrarBotonSiguiente();
 
 
       delete window[callbackName];
@@ -444,6 +520,11 @@ function procesarCodigo(codigo) {
 
     procesando = false;
 
+    esperandoSiguiente = true;
+
+
+    mostrarBotonSiguiente();
+
 
     delete window[callbackName];
 
@@ -451,6 +532,76 @@ function procesarCodigo(codigo) {
 
 
   document.body.appendChild(script);
+
+}
+
+
+// ======================================================
+// BOTÓN SIGUIENTE
+// ======================================================
+
+function siguienteEscaneo() {
+
+  if (!esperandoSiguiente) {
+    return;
+  }
+
+
+  esperandoSiguiente = false;
+
+  procesando = false;
+
+
+  ocultarBotonSiguiente();
+
+
+  mostrarResultado(
+    "📷 PREPARANDO SIGUIENTE ESCANEO...",
+    "Espere un momento.",
+    "esperando"
+  );
+
+
+  // Pequeña pausa para asegurar que
+  // la cámara anterior esté completamente liberada
+
+  setTimeout(() => {
+
+    iniciarEscaner();
+
+  }, 300);
+
+}
+
+
+// ======================================================
+// MOSTRAR BOTÓN SIGUIENTE
+// ======================================================
+
+function mostrarBotonSiguiente() {
+
+  const boton =
+    document.getElementById(
+      "btnSiguiente"
+    );
+
+  boton.style.display = "block";
+
+}
+
+
+// ======================================================
+// OCULTAR BOTÓN SIGUIENTE
+// ======================================================
+
+function ocultarBotonSiguiente() {
+
+  const boton =
+    document.getElementById(
+      "btnSiguiente"
+    );
+
+  boton.style.display = "none";
 
 }
 
@@ -488,34 +639,37 @@ function mostrarResultado(
 
 
 // ======================================================
-// ESCANEAR NUEVAMENTE
+// INICIO
 // ======================================================
 
-function reiniciarEscaner() {
+document.getElementById(
+  "servicio"
+).addEventListener(
+  "change",
+  function() {
 
-  procesando = false;
+    if (escanerActivo) {
+
+      detenerEscaner();
+
+    }
+
+    procesando = false;
+
+    esperandoSiguiente = false;
+
+    ocultarBotonSiguiente();
 
 
-  if (!escanerActivo) {
-
-    iniciarEscaner();
-
-    return;
+    mostrarResultado(
+      "📷 LISTO PARA ESCANEAR",
+      "Presiona INICIAR ESCÁNER.",
+      "esperando"
+    );
 
   }
+);
 
-
-  mostrarResultado(
-
-    "📷 LISTO PARA ESCANEAR",
-
-    "Apunta al siguiente código.",
-
-    "esperando"
-
-  );
-
-}
 
 </script>
 
