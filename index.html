@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
   <meta charset="UTF-8">
+
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
@@ -12,6 +15,7 @@
   <script src="https://unpkg.com/html5-qrcode"></script>
 
   <style>
+
     * {
       box-sizing: border-box;
     }
@@ -92,22 +96,6 @@
       margin-top: 15px;
       box-shadow: 0 3px 12px rgba(0,0,0,0.12);
       text-align: center;
-      border: 2px solid transparent;
-    }
-
-    .resultado.registro-ok {
-      background: #e8f5e9;
-      border-color: #81c784;
-    }
-
-    .resultado.registro-duplicado {
-      background: #fff8e1;
-      border-color: #fbc02d;
-    }
-
-    .resultado.registro-no-beneficiario {
-      background: #ffebee;
-      border-color: #e57373;
     }
 
     .resultado-titulo {
@@ -157,8 +145,11 @@
     .error {
       color: #b00020;
     }
+
   </style>
+
 </head>
+
 
 <body>
 
@@ -172,13 +163,18 @@
       Liceo Industrial Benjamín Franklin
     </div>
 
-    <div class="servicio" id="bloqueServicio">
+
+    <div
+      class="servicio"
+      id="bloqueServicio"
+    >
 
       <label for="servicio">
         Servicio
       </label>
 
       <select id="servicio">
+
         <option value="DESAYUNO">
           DESAYUNO
         </option>
@@ -186,9 +182,11 @@
         <option value="ALMUERZO">
           ALMUERZO
         </option>
+
       </select>
 
     </div>
+
 
     <div id="lector">
 
@@ -202,6 +200,7 @@
       </div>
 
     </div>
+
 
     <div
       id="resultado"
@@ -248,31 +247,50 @@
 
   <script>
 
-    /******************************************************
-     * CONFIGURACIÓN
-     ******************************************************/
-
     const URL_APPS_SCRIPT =
       "https://script.google.com/macros/s/AKfycbxPnTIJWHBdZuflY6QJFPqnJjLL2UrY1BOafTNhVOrHo3WuDXh5d3AU8Qe0NsMkhMKY/exec";
 
 
     let html5QrCode = null;
 
+    /*
+     * Esta variable es fundamental.
+     *
+     * Mientras sea true:
+     *
+     * - no se acepta otra lectura;
+     * - no se envía otra petición;
+     * - aunque la cámara entregue otro evento,
+     *   será ignorado.
+     */
     let procesando = false;
 
 
-    /******************************************************
+    /*
+     * Identificador de la petición actual.
+     *
+     * Sirve para asegurarnos de que una respuesta
+     * antigua no pueda modificar una lectura nueva.
+     */
+    let idPeticionActual = 0;
+
+
+    /*
+     * Indica si ya recibimos la respuesta
+     * del servidor.
+     */
+    let respuestaRecibida = false;
+
+
+
+    /************************************************************
      * INICIAR ESCÁNER
-     ******************************************************/
+     ************************************************************/
 
     function iniciarEscaner() {
 
       procesando = false;
-
-      document
-        .getElementById("estado")
-        .textContent =
-          "Apunta la cámara al código PAE.";
+      respuestaRecibida = false;
 
       document
         .getElementById("resultado")
@@ -286,6 +304,26 @@
         .getElementById("bloqueServicio")
         .classList.remove("oculto");
 
+      document
+        .getElementById("estado")
+        .textContent =
+          "Apunta la cámara al código PAE.";
+
+
+      /*
+       * Si existía una instancia anterior,
+       * intentamos limpiarla antes de crear otra.
+       */
+
+      if (html5QrCode) {
+
+        try {
+          html5QrCode.clear();
+        } catch (e) {}
+
+        html5QrCode = null;
+      }
+
 
       html5QrCode =
         new Html5Qrcode("reader");
@@ -295,81 +333,73 @@
 
         fps: 10,
 
-        qrbox: function(
-          viewfinderWidth,
-          viewfinderHeight
-        ) {
+        qrbox:
+          function(
+            viewfinderWidth,
+            viewfinderHeight
+          ) {
 
-          const size =
-            Math.min(
-              viewfinderWidth,
-              viewfinderHeight
-            ) * 0.70;
+            const size =
+              Math.min(
+                viewfinderWidth,
+                viewfinderHeight
+              ) * 0.70;
 
-          return {
-            width: size,
-            height: size
-          };
+            return {
+              width: size,
+              height: size
+            };
 
-        },
+          },
 
         aspectRatio: 1.0
 
       };
 
 
-      html5QrCode
-        .start(
+      html5QrCode.start(
 
-          {
-            facingMode: {
-              exact: "environment"
-            }
-          },
+        {
+          facingMode: {
+            exact: "environment"
+          }
+        },
 
-          config,
+        config,
 
-          onScanSuccess,
+        onScanSuccess,
 
-          onScanFailure
+        onScanFailure
 
-        )
+      )
+      .catch(function(error) {
 
-        .catch(function(error) {
+        console.error(
+          "Error cámara:",
+          error
+        );
 
-          console.error(
-            "Error cámara:",
-            error
-          );
+        iniciarCamaraAlternativa();
 
-          /*
-           * Segundo intento si el dispositivo
-           * no acepta facingMode exact.
-           */
-
-          iniciarCamaraAlternativa();
-
-        });
+      });
 
     }
 
 
-    /******************************************************
+
+    /************************************************************
      * CÁMARA ALTERNATIVA
-     ******************************************************/
+     ************************************************************/
 
     function iniciarCamaraAlternativa() {
 
       if (html5QrCode) {
 
         try {
-
           html5QrCode.clear();
-
         } catch (e) {}
 
       }
-
 
       html5QrCode =
         new Html5Qrcode("reader");
@@ -387,57 +417,80 @@
       };
 
 
-      html5QrCode
-        .start(
+      html5QrCode.start(
 
-          {
-            facingMode: "environment"
-          },
+        {
+          facingMode: "environment"
+        },
 
-          config,
+        config,
 
-          onScanSuccess,
+        onScanSuccess,
 
-          onScanFailure
+        onScanFailure
 
-        )
+      )
+      .catch(function(error) {
 
-        .catch(function(error) {
+        console.error(error);
 
-          console.error(
-            error
-          );
+        document
+          .getElementById("estado")
+          .innerHTML =
+            '<span class="error">' +
+            'No se pudo iniciar la cámara.' +
+            '</span>';
 
-          document
-            .getElementById("estado")
-            .innerHTML =
-              '<span class="error">' +
-              'No se pudo iniciar la cámara.' +
-              '</span>';
-
-        });
+      });
 
     }
 
 
-    /******************************************************
-     * CUANDO DETECTA UN CÓDIGO
-     ******************************************************/
 
-    function onScanSuccess(
-      decodedText
-    ) {
+    /************************************************************
+     * LECTURA DEL CÓDIGO
+     ************************************************************/
+
+    function onScanSuccess(decodedText) {
 
       /*
-       * Evita múltiples lecturas
-       * del mismo código.
+       * ESTA ES LA PRIMERA BARRERA.
+       *
+       * Si ya existe una lectura procesándose,
+       * ignoramos completamente cualquier nueva lectura.
        */
 
       if (procesando) {
+
+        console.log(
+          "Lectura ignorada: ya existe una petición en curso."
+        );
+
         return;
       }
 
+
+      /*
+       * Bloqueamos INMEDIATAMENTE.
+       *
+       * Esto ocurre antes de detener la cámara,
+       * antes de enviar la petición y antes de cualquier
+       * operación que pueda demorar.
+       */
+
       procesando = true;
+
+      respuestaRecibida = false;
+
+
+      /*
+       * Generamos un identificador único para esta lectura.
+       */
+
+      idPeticionActual++;
+
+      const miPeticion =
+        idPeticionActual;
 
 
       const codigo =
@@ -466,49 +519,74 @@
 
 
       /*
-       * DETENER CÁMARA
+       * OCULTAMOS EL LECTOR INMEDIATAMENTE.
+       *
+       * No esperamos a que html5-qrcode
+       * termine de detener la cámara.
+       */
+
+      document
+        .getElementById("lector")
+        .classList.add("oculto");
+
+
+      document
+        .getElementById("bloqueServicio")
+        .classList.add("oculto");
+
+
+      /*
+       * Mostramos inmediatamente que estamos
+       * esperando la respuesta.
+       */
+
+      mostrarEsperando();
+
+
+      /*
+       * Detenemos la cámara.
+       *
+       * PERO NO esperamos este proceso para
+       * enviar la petición.
        */
 
       detenerCamara();
 
 
-      document
-        .getElementById("estado")
-        .textContent =
-          "Registrando...";
-
-
       /*
-       * ENVIAR A APPS SCRIPT
+       * Enviamos UNA sola petición.
        */
 
       enviarRegistro(
         codigo,
-        servicio
+        servicio,
+        miPeticion
       );
 
     }
 
 
-    /******************************************************
-     * EVITAR RUIDO DE ESCANEO
-     ******************************************************/
+
+    /************************************************************
+     * FALLA DE LECTURA
+     ************************************************************/
 
     function onScanFailure(error) {
 
       /*
        * No hacemos nada.
-       * html5-qrcode llama constantemente
-       * a esta función cuando todavía no
-       * encuentra un código.
+       *
+       * Las fallas normales de lectura de cámara
+       * son ignoradas.
        */
 
     }
 
 
-    /******************************************************
+
+    /************************************************************
      * DETENER CÁMARA
-     ******************************************************/
+     ************************************************************/
 
     function detenerCamara() {
 
@@ -517,53 +595,187 @@
       }
 
 
-      html5QrCode
-        .stop()
+      try {
 
-        .then(function() {
+        const resultado =
+          html5QrCode.stop();
 
-          console.log(
-            "Cámara detenida."
-          );
 
-        })
+        /*
+         * NO usamos await.
+         *
+         * La interfaz ya fue bloqueada y ocultada.
+         * La petición al servidor no depende de que
+         * la cámara termine de detenerse.
+         */
 
-        .catch(function(error) {
+        if (
+          resultado &&
+          typeof resultado.then === "function"
+        ) {
 
-          console.log(
-            "La cámara ya estaba detenida.",
-            error
-          );
+          resultado
+            .then(function() {
 
-        });
+              console.log(
+                "Cámara detenida."
+              );
+
+            })
+            .catch(function(error) {
+
+              console.log(
+                "La cámara ya estaba detenida.",
+                error
+              );
+
+            });
+
+        }
+
+      } catch (error) {
+
+        console.log(
+          "Error al detener cámara:",
+          error
+        );
+
+      }
 
     }
 
 
-    /******************************************************
+
+    /************************************************************
+     * MOSTRAR "REGISTRANDO..."
+     ************************************************************/
+
+    function mostrarEsperando() {
+
+      const resultado =
+        document.getElementById(
+          "resultado"
+        );
+
+
+      resultado.style.display =
+        "block";
+
+
+      document
+        .getElementById(
+          "resultadoTitulo"
+        )
+        .textContent =
+          "⏳ REGISTRANDO...";
+
+
+      document
+        .getElementById(
+          "resultadoNombre"
+        )
+        .textContent =
+          "Procesando el registro.";
+
+
+      document
+        .getElementById(
+          "resultadoServicio"
+        )
+        .innerHTML = "";
+
+
+      document
+        .getElementById(
+          "resultadoFecha"
+        )
+        .innerHTML = "";
+
+
+      document
+        .getElementById(
+          "resultadoHora"
+        )
+        .innerHTML = "";
+
+
+      /*
+       * Mientras esperamos la respuesta,
+       * ocultamos SIGUIENTE.
+       */
+
+      document
+        .getElementById(
+          "btnSiguiente"
+        )
+        .classList.add("oculto");
+
+    }
+
+
+
+    /************************************************************
      * ENVIAR REGISTRO
-     ******************************************************/
+     ************************************************************/
 
     function enviarRegistro(
       codigo,
-      servicio
+      servicio,
+      miPeticion
     ) {
 
       /*
-       * Creamos un nombre de función
-       * JSONP único.
+       * Nombre único para JSONP.
        */
 
       const callbackName =
         "respuestaPAE_" +
-        Date.now();
+        Date.now() +
+        "_" +
+        Math.floor(
+          Math.random() * 100000
+        );
 
+
+      let script = null;
+
+
+      /*
+       * CALLBACK DEL SERVIDOR
+       */
 
       window[callbackName] =
         function(respuesta) {
 
           /*
-           * Eliminar función temporal.
+           * Si esta respuesta corresponde
+           * a una petición antigua, la ignoramos.
+           */
+
+          if (
+            miPeticion !==
+            idPeticionActual
+          ) {
+
+            console.log(
+              "Respuesta antigua ignorada."
+            );
+
+            return;
+          }
+
+
+          /*
+           * Marcamos que la respuesta llegó.
+           */
+
+          respuestaRecibida =
+            true;
+
+
+          /*
+           * Eliminamos inmediatamente
+           * el callback global.
            */
 
           try {
@@ -572,20 +784,18 @@
               callbackName
             ];
 
-          } catch (e) {}
+          } catch (e) {
+
+            window[
+              callbackName
+            ] = undefined;
+
+          }
 
 
           /*
-           * Mostrar respuesta.
-           */
-
-          mostrarResultado(
-            respuesta
-          );
-
-
-          /*
-           * Eliminar script JSONP.
+           * Eliminamos el script
+           * que realizó la petición.
            */
 
           if (
@@ -594,43 +804,79 @@
           ) {
 
             script.parentNode
-              .removeChild(
-                script
-              );
+              .removeChild(script);
 
           }
+
+
+          /*
+           * Mostramos el resultado.
+           */
+
+          mostrarResultado(
+            respuesta
+          );
+
+
+          /*
+           * SOLO AHORA permitimos
+           * pasar a la siguiente lectura.
+           */
+
+          document
+            .getElementById(
+              "btnSiguiente"
+            )
+            .classList.remove("oculto");
 
         };
 
 
+      /*
+       * Construimos la URL.
+       */
+
       const url =
         URL_APPS_SCRIPT +
         "?codigo=" +
-        encodeURIComponent(
-          codigo
-        ) +
+        encodeURIComponent(codigo) +
         "&servicio=" +
-        encodeURIComponent(
-          servicio
-        ) +
+        encodeURIComponent(servicio) +
         "&callback=" +
-        encodeURIComponent(
-          callbackName
-        );
+        encodeURIComponent(callbackName);
 
 
-      const script =
+      /*
+       * Creamos el script JSONP.
+       */
+
+      script =
         document.createElement(
           "script"
         );
 
 
-      script.src =
-        url;
+      script.src = url;
 
+
+      /*
+       * Si falla la comunicación,
+       * mostramos error y permitimos
+       * volver a intentar.
+       */
 
       script.onerror =
         function() {
+
+          /*
+           * Si ya llegó una respuesta,
+           * no hacemos nada.
+           */
+
+          if (respuestaRecibida) {
+            return;
+          }
+
 
           try {
 
@@ -638,7 +884,24 @@
               callbackName
             ];
 
-          } catch (e) {}
+          } catch (e) {
+
+            window[
+              callbackName
+            ] = undefined;
+
+          }
+
+
+          if (
+            script &&
+            script.parentNode
+          ) {
+
+            script.parentNode
+              .removeChild(script);
+
+          }
 
 
           mostrarError(
@@ -648,60 +911,34 @@
         };
 
 
-      document
-        .body
-        .appendChild(
-          script
-        );
+      /*
+       * MUY IMPORTANTE:
+       *
+       * El script se agrega DESPUÉS de haber
+       * bloqueado la interfaz.
+       */
 
-    }
-
-
-    /******************************************************
-     * COLOR DEL RESULTADO
-     ******************************************************/
-
-    function aplicarColorResultado(clase) {
-
-      const resultado =
-        document.getElementById("resultado");
-
-      resultado.classList.remove(
-        "registro-ok",
-        "registro-duplicado",
-        "registro-no-beneficiario"
+      document.body.appendChild(
+        script
       );
 
-      if (clase) {
-        resultado.classList.add(clase);
-      }
-
     }
 
 
-    /******************************************************
+
+    /************************************************************
      * MOSTRAR RESULTADO
-     ******************************************************/
+     ************************************************************/
 
     function mostrarResultado(
       respuesta
     ) {
-
-      document
-        .getElementById("lector")
-        .classList.add("oculto");
-
-      document
-        .getElementById("bloqueServicio")
-        .classList.add("oculto");
-
 
       const resultado =
         document.getElementById(
           "resultado"
         );
 
-      aplicarColorResultado("");
 
       resultado.style.display =
         "block";
@@ -712,20 +949,24 @@
           "resultadoTitulo"
         );
 
+
       const nombre =
         document.getElementById(
           "resultadoNombre"
         );
+
 
       const servicio =
         document.getElementById(
           "resultadoServicio"
         );
 
+
       const fecha =
         document.getElementById(
           "resultadoFecha"
         );
+
 
       const hora =
         document.getElementById(
@@ -734,25 +975,25 @@
 
 
       /*
-       * ERROR
+       * Limpiamos contenido anterior.
+       */
+
+      servicio.innerHTML = "";
+      fecha.innerHTML = "";
+      hora.innerHTML = "";
+
+
+      /*
+       * ERROR GENERAL
        */
 
       if (
         !respuesta ||
-        respuesta.ok === false &&
-        !respuesta.duplicado
+        (
+          respuesta.ok === false &&
+          !respuesta.duplicado
+        )
       ) {
-
-        if (
-          respuesta &&
-          String(respuesta.titulo || "")
-            .toUpperCase()
-            .indexOf("NO BENEFICIARIO") >= 0
-        ) {
-          aplicarColorResultado(
-            "registro-no-beneficiario"
-          );
-        }
 
         titulo.textContent =
           respuesta &&
@@ -760,23 +1001,15 @@
             ? respuesta.titulo
             : "❌ ERROR";
 
+
         nombre.textContent =
           respuesta &&
           respuesta.mensaje
             ? respuesta.mensaje
             : "No fue posible registrar.";
 
-        servicio.innerHTML =
-          "";
-
-        fecha.innerHTML =
-          "";
-
-        hora.innerHTML =
-          "";
 
         return;
-
       }
 
 
@@ -787,10 +1020,6 @@
       if (
         respuesta.duplicado === true
       ) {
-
-        aplicarColorResultado(
-          "registro-duplicado"
-        );
 
         titulo.textContent =
           "⚠️ ESTUDIANTE YA REGISTRADO";
@@ -805,39 +1034,31 @@
         servicio.innerHTML =
           "<strong>Servicio:</strong> " +
           escaparHtml(
-            respuesta.servicio ||
-            ""
+            respuesta.servicio || ""
           );
 
 
         fecha.innerHTML =
           "<strong>Fecha:</strong> " +
           escaparHtml(
-            respuesta.fecha ||
-            ""
+            respuesta.fecha || ""
           );
 
 
         hora.innerHTML =
           "<strong>Hora del registro:</strong> " +
           escaparHtml(
-            respuesta.hora ||
-            ""
+            respuesta.hora || ""
           );
 
 
         return;
-
       }
 
 
       /*
        * REGISTRO CORRECTO
        */
-
-      aplicarColorResultado(
-        "registro-ok"
-      );
 
       titulo.textContent =
         "✅ ESTUDIANTE REGISTRADO";
@@ -852,58 +1073,45 @@
       servicio.innerHTML =
         "<strong>Servicio:</strong> " +
         escaparHtml(
-          respuesta.servicio ||
-          ""
+          respuesta.servicio || ""
         );
 
 
       fecha.innerHTML =
         "<strong>Fecha:</strong> " +
         escaparHtml(
-          respuesta.fecha ||
-          ""
+          respuesta.fecha || ""
         );
 
 
       hora.innerHTML =
         "<strong>Hora:</strong> " +
         escaparHtml(
-          respuesta.hora ||
-          ""
+          respuesta.hora || ""
         );
 
     }
 
 
-    /******************************************************
-     * MOSTRAR ERROR DE COMUNICACIÓN
-     ******************************************************/
+
+    /************************************************************
+     * ERROR
+     ************************************************************/
 
     function mostrarError(
       mensaje
     ) {
 
-      detenerCamara();
+      respuestaRecibida =
+        false;
 
 
       document
-        .getElementById("lector")
-        .classList.add("oculto");
-
-      document
-        .getElementById("bloqueServicio")
-        .classList.add("oculto");
-
-
-      const resultado =
-        document.getElementById(
+        .getElementById(
           "resultado"
-        );
-
-      aplicarColorResultado("");
-
-      resultado.style.display =
-        "block";
+        )
+        .style.display =
+          "block";
 
 
       document
@@ -926,31 +1134,63 @@
         .getElementById(
           "resultadoServicio"
         )
-        .innerHTML =
-          "";
+        .innerHTML = "";
+
 
       document
         .getElementById(
           "resultadoFecha"
         )
-        .innerHTML =
-          "";
+        .innerHTML = "";
+
 
       document
         .getElementById(
           "resultadoHora"
         )
-        .innerHTML =
-          "";
+        .innerHTML = "";
+
+
+      /*
+       * Permite volver a intentar.
+       */
+
+      document
+        .getElementById(
+          "btnSiguiente"
+        )
+        .classList.remove("oculto");
 
     }
 
 
-    /******************************************************
+
+    /************************************************************
      * SIGUIENTE
-     ******************************************************/
+     ************************************************************/
 
     function siguiente() {
+
+      /*
+       * Solo permitimos continuar
+       * cuando la petición anterior terminó.
+       */
+
+      if (
+        !respuestaRecibida
+      ) {
+
+        console.log(
+          "SIGUIENTE bloqueado: todavía esperando respuesta."
+        );
+
+        return;
+      }
+
+
+      /*
+       * Ocultamos resultado.
+       */
 
       document
         .getElementById(
@@ -960,9 +1200,14 @@
           "none";
 
 
+      /*
+       * Mostramos nuevamente servicio
+       * y lector.
+       */
+
       document
         .getElementById(
-          "lector"
+          "bloqueServicio"
         )
         .classList.remove(
           "oculto"
@@ -971,7 +1216,7 @@
 
       document
         .getElementById(
-          "bloqueServicio"
+          "lector"
         )
         .classList.remove(
           "oculto"
@@ -986,14 +1231,19 @@
           "Iniciando cámara...";
 
 
-      procesando =
-        false;
+      /*
+       * Liberamos la lectura anterior.
+       */
+
+      procesando = false;
+
+      respuestaRecibida = false;
 
 
       /*
-       * Pequeña pausa para que
-       * la cámara anterior termine
-       * completamente.
+       * Pequeña pausa para asegurar
+       * que la instancia anterior de la cámara
+       * haya terminado completamente.
        */
 
       setTimeout(
@@ -1008,9 +1258,10 @@
     }
 
 
-    /******************************************************
-     * SEGURIDAD PARA TEXTO HTML
-     ******************************************************/
+
+    /************************************************************
+     * ESCAPAR HTML
+     ************************************************************/
 
     function escaparHtml(
       texto
@@ -1043,9 +1294,10 @@
     }
 
 
-    /******************************************************
-     * INICIAR AL CARGAR
-     ******************************************************/
+
+    /************************************************************
+     * INICIO
+     ************************************************************/
 
     window.addEventListener(
       "load",
@@ -1059,4 +1311,5 @@
   </script>
 
 </body>
+
 </html>
