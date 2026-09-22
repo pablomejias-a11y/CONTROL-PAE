@@ -523,7 +523,7 @@
         CURSO
 
         <strong id="curso">
-          1° A
+          -
         </strong>
 
       </div>
@@ -563,9 +563,17 @@
   <script>
 
 
-    /* ================================
+    /* =====================================================
+       CONEXIÓN CON GOOGLE APPS SCRIPT
+       ===================================================== */
+
+    const API_CREDENCIAL =
+      "https://script.google.com/macros/s/AKfycbz7iwICrZOEx7ja93ZekeDGRIhB9kpC4W4-aAbmXh5yPbEFvdbJOxvcDHlE9lWaK6Zz/exec";
+
+
+    /* =====================================================
        BUSCAR CREDENCIAL
-       ================================ */
+       ===================================================== */
 
     function buscarCredencial() {
 
@@ -606,81 +614,238 @@
       }
 
 
-      /* PRUEBA TEMPORAL */
+      /*
+       * Mientras se realiza la búsqueda
+       */
 
-      if (rut === "23809848-3") {
+      mensaje.textContent =
+        "🔎 Buscando credencial...";
 
+      mensaje.style.color =
+        "#075AA6";
 
-        const nombre =
-          "AGUILERA MONTECINO DAMARYS ALLISON";
+      credencial.style.display =
+        "none";
 
-
-        const curso =
-          "1° A";
-
-
-        const codigo =
-          "PAE0006";
-
-
-        document
-          .getElementById("nombre")
-          .textContent = nombre;
+      acciones.style.display =
+        "none";
 
 
-        document
-          .getElementById("curso")
-          .textContent = curso;
+      /*
+       * Generamos un nombre único para
+       * la función de respuesta JSONP.
+       */
+
+      const callback =
+        "respuestaCredencial_" +
+        Date.now();
 
 
-        ajustarNombre();
+      /*
+       * Función que recibirá la respuesta
+       * desde Google Apps Script.
+       */
+
+      window[callback] =
+        function(data) {
+
+          /*
+           * Eliminamos la función temporal
+           */
+
+          try {
+            delete window[callback];
+          } catch (error) {
+            window[callback] = undefined;
+          }
 
 
-        generarCodigoBarras(codigo);
+          /*
+           * Si hubo un problema con la respuesta
+           */
+
+          if (!data) {
+
+            mensaje.textContent =
+              "⚠️ No fue posible consultar la credencial.";
+
+            mensaje.style.color =
+              "#9c0006";
+
+            return;
+          }
 
 
-        credencial.style.display =
-          "block";
+          /*
+           * Credencial encontrada
+           */
+
+          if (
+            data.ok === true &&
+            data.encontrada === true
+          ) {
+
+            const nombre =
+              data.estudiante || "";
+
+            const curso =
+              data.curso || "";
+
+            const codigo =
+              data.codigo || "";
 
 
-        acciones.style.display =
-          "flex";
+            document
+              .getElementById("nombre")
+              .textContent =
+                nombre;
 
 
-        mensaje.textContent =
-          "✅ Credencial encontrada.";
+            document
+              .getElementById("curso")
+              .textContent =
+                curso;
 
 
-        mensaje.style.color =
-          "#006100";
+            ajustarNombre();
 
 
-      } else {
+            generarCodigoBarras(codigo);
 
 
-        credencial.style.display =
-          "none";
+            credencial.style.display =
+              "block";
 
 
-        acciones.style.display =
-          "none";
+            acciones.style.display =
+              "flex";
 
 
-        mensaje.textContent =
-          "⚠️ RUT no encontrado en esta prueba.";
+            mensaje.textContent =
+              "✅ Credencial encontrada.";
 
 
-        mensaje.style.color =
-          "#9c0006";
+            mensaje.style.color =
+              "#006100";
 
-      }
+
+            return;
+          }
+
+
+          /*
+           * Estudiante no encontrado,
+           * no beneficiario u otro mensaje
+           */
+
+          credencial.style.display =
+            "none";
+
+
+          acciones.style.display =
+            "none";
+
+
+          mensaje.textContent =
+            "⚠️ " +
+            (
+              data.mensaje ||
+              "No se encontró la credencial."
+            );
+
+
+          mensaje.style.color =
+            "#9c0006";
+
+        };
+
+
+      /*
+       * Construimos la consulta al Web App.
+       */
+
+      const url =
+        API_CREDENCIAL +
+        "?rut=" +
+        encodeURIComponent(rut) +
+        "&callback=" +
+        encodeURIComponent(callback) +
+        "&_=" +
+        Date.now();
+
+
+      /*
+       * JSONP mediante <script>.
+       * Esto permite consultar Apps Script
+       * desde GitHub Pages.
+       */
+
+      const script =
+        document.createElement("script");
+
+
+      script.src =
+        url;
+
+
+      script.async =
+        true;
+
+
+      /*
+       * Si Google Apps Script no responde,
+       * mostramos un mensaje.
+       */
+
+      script.onerror =
+        function() {
+
+          try {
+            delete window[callback];
+          } catch (error) {
+            window[callback] = undefined;
+          }
+
+
+          mensaje.textContent =
+            "⚠️ No fue posible conectar con el sistema.";
+
+          mensaje.style.color =
+            "#9c0006";
+
+        };
+
+
+      document
+        .body
+        .appendChild(script);
+
+
+      /*
+       * Eliminamos el <script> después de unos segundos.
+       */
+
+      setTimeout(
+        function() {
+
+          if (script.parentNode) {
+
+            script.parentNode.removeChild(
+              script
+            );
+
+          }
+
+        },
+        10000
+      );
 
     }
 
 
-    /* ================================
+    /* =====================================================
        AJUSTAR NOMBRE
-       ================================ */
+       ===================================================== */
 
     function ajustarNombre() {
 
@@ -688,7 +853,8 @@
         document.getElementById("nombre");
 
 
-      let tamaño = 15;
+      let tamaño =
+        15;
 
 
       elemento.style.fontSize =
@@ -718,9 +884,9 @@
     }
 
 
-    /* ================================
+    /* =====================================================
        GENERAR CODIGO DE BARRAS
-       ================================ */
+       ===================================================== */
 
     function generarCodigoBarras(codigo) {
 
@@ -742,9 +908,32 @@
 
       document
         .getElementById("codigoBarras")
-        .src = url;
+        .src =
+          url;
 
     }
+
+
+    /* =====================================================
+       PERMITIR ENTER EN EL CAMPO RUT
+       ===================================================== */
+
+    document
+      .getElementById("rut")
+      .addEventListener(
+        "keydown",
+        function(event) {
+
+          if (
+            event.key === "Enter"
+          ) {
+
+            buscarCredencial();
+
+          }
+
+        }
+      );
 
 
   </script>
