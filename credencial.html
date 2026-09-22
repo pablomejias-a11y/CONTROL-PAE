@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Mi Credencial PAE</title>
 
   <style>
+
     * {
       box-sizing: border-box;
     }
@@ -19,7 +21,8 @@
     }
 
     .contenedor {
-      max-width: 500px;
+      width: 100%;
+      max-width: 520px;
       margin: 0 auto;
       text-align: center;
     }
@@ -34,6 +37,8 @@
       color: #555;
       font-size: 15px;
     }
+
+    /* BUSCADOR */
 
     .buscador {
       background: white;
@@ -81,133 +86,315 @@
       min-height: 22px;
     }
 
+
+    /* ==========================================
+       CREDENCIAL
+       ========================================== */
+
     .credencial {
       width: 360px;
       max-width: 100%;
-      height: 240px;
-      margin: 25px auto 0;
+
+      /* proporción 90 x 60 */
+      aspect-ratio: 3 / 2;
+
+      margin: 28px auto 0;
+
       background: white;
+
       border: 2px solid #111;
-      border-radius: 16px;
-      padding: 16px;
+
+      border-radius: 15px;
+
       position: relative;
-      display: none;
+
       overflow: hidden;
+
+      display: none;
+
       text-align: left;
     }
 
+
+    /* ==========================================
+       INSIGNIA
+       ========================================== */
+
     .logo {
       position: absolute;
-      left: 15px;
-      top: 15px;
-      width: 78px;
-      height: 78px;
+
+      left: 4.5%;
+
+      top: 7%;
+
+      width: 22%;
+
+      height: 22%;
+
       object-fit: contain;
     }
 
+
+    /* ==========================================
+       TITULO
+       ========================================== */
+
     .titulo {
-      margin-left: 105px;
-      font-size: 22px;
+
+      position: absolute;
+
+      left: 34.5%;
+
+      top: 8%;
+
+      right: 4%;
+
+      font-size: 6.1%;
+
       font-weight: bold;
-      margin-top: 4px;
-    }
 
-    .linea {
-      border-top: 1px solid #111;
-      margin: 7px 0 5px 105px;
-    }
-
-    .subtitulo-credencial {
-      margin-left: 105px;
-      font-size: 9px;
       white-space: nowrap;
     }
 
-    .nombre {
+
+    .linea {
+
       position: absolute;
-      left: 15px;
-      right: 60px;
-      top: 116px;
-      background: #e8e8e8;
-      border-radius: 7px;
-      padding: 10px 6px;
-      text-align: center;
-      font-size: 13px;
-      font-weight: bold;
+
+      left: 34.5%;
+
+      right: 4%;
+
+      top: 19%;
+
+      border-top: 1px solid #111;
     }
+
+
+    .subtitulo-credencial {
+
+      position: absolute;
+
+      left: 34.5%;
+
+      top: 23%;
+
+      right: 3%;
+
+      font-size: 2.55%;
+
+      white-space: nowrap;
+    }
+
+
+    /* ==========================================
+       NOMBRE
+       ========================================== */
+
+    .nombre {
+
+      position: absolute;
+
+      left: 5.5%;
+
+      right: 14%;
+
+      top: 49%;
+
+      height: 16%;
+
+      background: #e8e8e8;
+
+      border-radius: 7px;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      text-align: center;
+
+      padding: 4px;
+
+      font-weight: bold;
+
+      line-height: 1.05;
+
+      overflow: hidden;
+
+      word-break: normal;
+    }
+
+
+    /* ==========================================
+       CURSO
+       ========================================== */
 
     .curso {
+
       position: absolute;
-      right: 15px;
-      top: 116px;
-      width: 38px;
-      height: 38px;
+
+      right: 4%;
+
+      top: 49%;
+
+      width: 10%;
+
+      height: 16%;
+
       background: #e8e8e8;
+
       border-radius: 7px;
+
       text-align: center;
-      padding-top: 5px;
-      font-size: 7px;
+
+      padding-top: 2.5%;
+
+      font-size: 2.2%;
+
       font-weight: bold;
     }
 
+
     .curso strong {
+
       display: block;
-      font-size: 11px;
+
+      font-size: 3.4%;
+
       margin-top: 2px;
     }
 
+
+    /* ==========================================
+       CODIGO DE BARRAS
+       ========================================== */
+
     .barcode {
+
       position: absolute;
-      left: 15px;
-      right: 15px;
-      bottom: 13px;
-      height: 72px;
+
+      left: 5%;
+
+      right: 5%;
+
+      bottom: 4%;
+
+      height: 30%;
+
       display: flex;
+
       align-items: center;
+
       justify-content: center;
+
       background: white;
+
+      overflow: hidden;
     }
+
 
     .barcode img {
-      max-width: 100%;
-      max-height: 72px;
+
+      width: 100%;
+
+      height: 100%;
+
+      object-fit: contain;
     }
 
+
+    /* ==========================================
+       IMPRESION
+       ========================================== */
+
     @media print {
+
       body {
+
         background: white;
+
         padding: 0;
+
       }
 
       .contenedor > h1,
       .subtitulo,
       .buscador,
       #mensaje {
+
         display: none;
       }
 
       .credencial {
+
         display: block !important;
+
         margin: 0;
+
         box-shadow: none;
+
+        width: 90mm;
+
+        height: 60mm;
+
+        aspect-ratio: auto;
       }
     }
+
+
+    /* ==========================================
+       CELULAR
+       ========================================== */
+
+    @media (max-width: 420px) {
+
+      body {
+        padding: 12px;
+      }
+
+      h1 {
+        font-size: 25px;
+      }
+
+      .credencial {
+        width: 100%;
+      }
+
+    }
+
   </style>
+
 </head>
+
 
 <body>
 
+
   <div class="contenedor">
 
-    <h1>Mi Credencial PAE</h1>
+
+    <h1>
+      Mi Credencial PAE
+    </h1>
+
 
     <div class="subtitulo">
       Consulta tu credencial digital JUNAEB 2026
     </div>
 
+
+    <!-- ======================================
+         BUSCADOR
+         ====================================== -->
+
     <div class="buscador">
 
-      <label for="rut">Ingresa tu RUT</label>
+      <label for="rut">
+        Ingresa tu RUT
+      </label>
+
 
       <input
         type="text"
@@ -216,122 +403,283 @@
         autocomplete="off"
       >
 
+
       <button onclick="buscarCredencial()">
         VER MI CREDENCIAL
       </button>
+
 
       <div id="mensaje"></div>
 
     </div>
 
+
+    <!-- ======================================
+         CREDENCIAL
+         ====================================== -->
+
     <div id="credencial" class="credencial">
 
+
+      <!-- LOGO -->
       <img
         src="LIBF.png"
         class="logo"
         alt="Liceo Industrial Benjamín Franklin"
       >
 
+
+      <!-- TITULO -->
+
       <div class="titulo">
         CREDENCIAL PAE
       </div>
 
+
       <div class="linea"></div>
+
 
       <div class="subtitulo-credencial">
         Sistema de registro asistencia JUNAEB 2026
       </div>
 
-      <div id="nombre" class="nombre">
+
+      <!-- NOMBRE -->
+
+      <div
+        id="nombre"
+        class="nombre"
+      >
         NOMBRE DEL ESTUDIANTE
       </div>
 
+
+      <!-- CURSO -->
+
       <div class="curso">
+
         CURSO
-        <strong id="curso">1° A</strong>
+
+        <strong id="curso">
+          1° A
+        </strong>
+
       </div>
+
+
+      <!-- CODIGO DE BARRAS -->
 
       <div class="barcode">
-        <img id="codigoBarras" alt="Código de barras">
+
+        <img
+          id="codigoBarras"
+          alt="Código de barras"
+        >
+
       </div>
 
+
     </div>
+
 
   </div>
 
 
   <script>
 
+
+    /* ==========================================
+       BUSCAR CREDENCIAL
+       ========================================== */
+
     function buscarCredencial() {
 
-      const rut = document.getElementById("rut").value.trim();
-      const mensaje = document.getElementById("mensaje");
-      const credencial = document.getElementById("credencial");
+
+      const rut =
+        document
+          .getElementById("rut")
+          .value
+          .trim();
+
+
+      const mensaje =
+        document.getElementById("mensaje");
+
+
+      const credencial =
+        document.getElementById("credencial");
+
 
       if (!rut) {
 
-        mensaje.textContent = "⚠️ Ingresa tu RUT.";
-        mensaje.style.color = "#9c0006";
-        credencial.style.display = "none";
+        mensaje.textContent =
+          "⚠️ Ingresa tu RUT.";
+
+        mensaje.style.color =
+          "#9c0006";
+
+        credencial.style.display =
+          "none";
 
         return;
       }
 
+
       /*
-       * POR AHORA ES UNA PRUEBA VISUAL.
+       * ========================================
+       * PRUEBA TEMPORAL
+       * ========================================
        *
-       * En el siguiente paso conectaremos esta página
-       * con Google Sheets para buscar automáticamente
-       * el estudiante por su RUT.
+       * Por ahora solamente usamos:
+       *
+       * RUT: 23809848-3
+       *
+       * Después conectaremos esta página
+       * directamente con ESTUDIANTES.
        */
+
 
       if (rut === "23809848-3") {
 
-        document.getElementById("nombre").textContent =
+
+        const nombre =
           "AGUILERA MONTECINO DAMARYS ALLISON";
 
-        document.getElementById("curso").textContent =
+
+        const curso =
           "1° A";
 
-        generarCodigoBarras("PAE0006");
 
-        credencial.style.display = "block";
+        const codigo =
+          "PAE0006";
 
-        mensaje.textContent = "✅ Credencial encontrada.";
-        mensaje.style.color = "#006100";
+
+        document
+          .getElementById("nombre")
+          .textContent = nombre;
+
+
+        document
+          .getElementById("curso")
+          .textContent = curso;
+
+
+        ajustarNombre();
+
+
+        generarCodigoBarras(codigo);
+
+
+        credencial.style.display =
+          "block";
+
+
+        mensaje.textContent =
+          "✅ Credencial encontrada.";
+
+
+        mensaje.style.color =
+          "#006100";
+
 
       } else {
 
-        credencial.style.display = "none";
+
+        credencial.style.display =
+          "none";
+
 
         mensaje.textContent =
           "⚠️ RUT no encontrado en esta prueba.";
 
-        mensaje.style.color = "#9c0006";
+
+        mensaje.style.color =
+          "#9c0006";
+
       }
 
     }
 
 
-    function generarCodigoBarras(codigo) {
+
+    /* ==========================================
+       AJUSTAR AUTOMATICAMENTE EL NOMBRE
+       ========================================== */
+
+    function ajustarNombre() {
+
+
+      const elemento =
+        document.getElementById("nombre");
+
+
+      let tamaño = 16;
+
+
+      elemento.style.fontSize =
+        tamaño + "px";
+
 
       /*
-       * Generamos un Code 128 usando una imagen externa
-       * solamente para esta prueba visual.
-       *
-       * En la versión definitiva el código se generará
-       * automáticamente a partir del Código PAE.
+       * Reducimos el tamaño hasta que
+       * el nombre quepa dentro del recuadro.
        */
 
-      const url =
-        "https://bwipjs-api.metafloor.com/?bcid=code128&text=" +
-        encodeURIComponent(codigo) +
-        "&scale=3&height=12&includetext=false";
 
-      document.getElementById("codigoBarras").src = url;
+      while (
+        (
+          elemento.scrollWidth >
+          elemento.clientWidth ||
+          elemento.scrollHeight >
+          elemento.clientHeight
+        )
+        &&
+        tamaño > 8
+      ) {
+
+        tamaño -= 0.5;
+
+        elemento.style.fontSize =
+          tamaño + "px";
+      }
+
     }
+
+
+
+    /* ==========================================
+       GENERAR CODIGO DE BARRAS
+       ========================================== */
+
+    function generarCodigoBarras(codigo) {
+
+
+      const url =
+
+        "https://bwipjs-api.metafloor.com/" +
+
+        "?bcid=code128" +
+
+        "&text=" +
+        encodeURIComponent(codigo) +
+
+        "&scale=3" +
+
+        "&height=14" +
+
+        "&includetext=false";
+
+
+      document
+        .getElementById("codigoBarras")
+        .src = url;
+
+    }
+
 
   </script>
 
+
 </body>
+
 </html>
