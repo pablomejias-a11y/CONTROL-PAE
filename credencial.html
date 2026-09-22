@@ -92,7 +92,6 @@
 
     /* ================================
        CREDENCIAL DIGITAL
-       90 x 60 mm
        ================================ */
 
     .credencial {
@@ -242,9 +241,11 @@
 
       text-align: center;
 
-      padding: 3px 7px;
+      padding: 3px 8px;
 
       color: #111;
+
+      font-size: 15px;
 
       font-weight: bold;
 
@@ -335,7 +336,7 @@
 
 
     /* ================================
-       BOTON PARA COMPARTIR / DESCARGAR
+       BOTON IMPRIMIR
        ================================ */
 
     .acciones {
@@ -486,8 +487,6 @@
     <div id="credencial" class="credencial">
 
 
-      <!-- INSIGNIA A COLOR -->
-
       <img
         src="LIBF.png"
         class="logo"
@@ -495,12 +494,8 @@
       >
 
 
-      <!-- SEPARADOR VERTICAL -->
-
       <div class="separador-vertical"></div>
 
-
-      <!-- TITULO -->
 
       <div class="titulo">
         CREDENCIAL PAE
@@ -515,8 +510,6 @@
       </div>
 
 
-      <!-- NOMBRE -->
-
       <div
         id="nombre"
         class="nombre"
@@ -524,8 +517,6 @@
         NOMBRE DEL ESTUDIANTE
       </div>
 
-
-      <!-- CURSO -->
 
       <div class="curso">
 
@@ -537,8 +528,6 @@
 
       </div>
 
-
-      <!-- CODIGO DE BARRAS -->
 
       <div class="barcode">
 
@@ -552,8 +541,6 @@
 
     </div>
 
-
-    <!-- ACCIONES -->
 
     <div
       id="acciones"
@@ -619,18 +606,7 @@
       }
 
 
-      /*
-       * ========================================
-       * PRUEBA TEMPORAL
-       * ========================================
-       *
-       * Por ahora usamos solamente
-       * un estudiante de prueba.
-       *
-       * Después conectaremos directamente
-       * con la hoja ESTUDIANTES.
-       */
-
+      /* PRUEBA TEMPORAL */
 
       if (rut === "23809848-3") {
 
@@ -712,7 +688,7 @@
         document.getElementById("nombre");
 
 
-      let tamaño = 18;
+      let tamaño = 15;
 
 
       elemento.style.fontSize =
@@ -747,7 +723,6 @@
        ================================ */
 
     function generarCodigoBarras(codigo) {
-
 
       const url =
 
