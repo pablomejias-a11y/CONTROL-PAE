@@ -91,11 +91,53 @@
     .resultado {
       display: none;
       background: white;
+      border: 2px solid #ccc;
       border-radius: 14px;
       padding: 22px 18px;
       margin-top: 15px;
       box-shadow: 0 3px 12px rgba(0,0,0,0.12);
       text-align: center;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    /* ==============================
+       COLORES DE RESULTADO
+       ============================== */
+
+    .resultado-exito {
+      background: #b7e1cd;
+      border: 2px solid #6aa84f;
+    }
+
+    .resultado-duplicado {
+      background: #fff2cc;
+      border: 2px solid #d6b656;
+    }
+
+    .resultado-no-beneficiario {
+      background: #f4c7c3;
+      border: 2px solid #cc0000;
+    }
+
+    .resultado-error {
+      background: white;
+      border: 2px solid #ccc;
+    }
+
+    .resultado-exito .resultado-titulo {
+      color: #006100;
+    }
+
+    .resultado-duplicado .resultado-titulo {
+      color: #7f6000;
+    }
+
+    .resultado-no-beneficiario .resultado-titulo {
+      color: #9c0006;
+    }
+
+    .resultado-error .resultado-titulo {
+      color: #b00020;
     }
 
     .resultado-titulo {
@@ -253,34 +295,11 @@
 
     let html5QrCode = null;
 
-    /*
-     * Esta variable es fundamental.
-     *
-     * Mientras sea true:
-     *
-     * - no se acepta otra lectura;
-     * - no se envía otra petición;
-     * - aunque la cámara entregue otro evento,
-     *   será ignorado.
-     */
     let procesando = false;
 
-
-    /*
-     * Identificador de la petición actual.
-     *
-     * Sirve para asegurarnos de que una respuesta
-     * antigua no pueda modificar una lectura nueva.
-     */
     let idPeticionActual = 0;
 
-
-    /*
-     * Indica si ya recibimos la respuesta
-     * del servidor.
-     */
     let respuestaRecibida = false;
-
 
 
     /************************************************************
@@ -297,6 +316,10 @@
         .style.display = "none";
 
       document
+        .getElementById("resultado")
+        .className = "resultado";
+
+      document
         .getElementById("lector")
         .classList.remove("oculto");
 
@@ -309,11 +332,6 @@
         .textContent =
           "Apunta la cámara al código PAE.";
 
-
-      /*
-       * Si existía una instancia anterior,
-       * intentamos limpiarla antes de crear otra.
-       */
 
       if (html5QrCode) {
 
@@ -386,7 +404,6 @@
     }
 
 
-
     /************************************************************
      * CÁMARA ALTERNATIVA
      ************************************************************/
@@ -446,19 +463,11 @@
     }
 
 
-
     /************************************************************
      * LECTURA DEL CÓDIGO
      ************************************************************/
 
     function onScanSuccess(decodedText) {
-
-      /*
-       * ESTA ES LA PRIMERA BARRERA.
-       *
-       * Si ya existe una lectura procesándose,
-       * ignoramos completamente cualquier nueva lectura.
-       */
 
       if (procesando) {
 
@@ -470,22 +479,9 @@
       }
 
 
-      /*
-       * Bloqueamos INMEDIATAMENTE.
-       *
-       * Esto ocurre antes de detener la cámara,
-       * antes de enviar la petición y antes de cualquier
-       * operación que pueda demorar.
-       */
-
       procesando = true;
 
       respuestaRecibida = false;
-
-
-      /*
-       * Generamos un identificador único para esta lectura.
-       */
 
       idPeticionActual++;
 
@@ -519,10 +515,7 @@
 
 
       /*
-       * OCULTAMOS EL LECTOR INMEDIATAMENTE.
-       *
-       * No esperamos a que html5-qrcode
-       * termine de detener la cámara.
+       * Ocultamos inmediatamente la cámara.
        */
 
       document
@@ -536,25 +529,22 @@
 
 
       /*
-       * Mostramos inmediatamente que estamos
-       * esperando la respuesta.
+       * Mostramos inmediatamente el estado.
        */
 
       mostrarEsperando();
 
 
       /*
-       * Detenemos la cámara.
-       *
-       * PERO NO esperamos este proceso para
-       * enviar la petición.
+       * Detenemos la cámara,
+       * pero NO esperamos a que termine.
        */
 
       detenerCamara();
 
 
       /*
-       * Enviamos UNA sola petición.
+       * Enviamos el registro.
        */
 
       enviarRegistro(
@@ -566,22 +556,13 @@
     }
 
 
-
     /************************************************************
      * FALLA DE LECTURA
      ************************************************************/
 
     function onScanFailure(error) {
 
-      /*
-       * No hacemos nada.
-       *
-       * Las fallas normales de lectura de cámara
-       * son ignoradas.
-       */
-
     }
-
 
 
     /************************************************************
@@ -600,14 +581,6 @@
         const resultado =
           html5QrCode.stop();
 
-
-        /*
-         * NO usamos await.
-         *
-         * La interfaz ya fue bloqueada y ocultada.
-         * La petición al servidor no depende de que
-         * la cámara termine de detenerse.
-         */
 
         if (
           resultado &&
@@ -645,9 +618,8 @@
     }
 
 
-
     /************************************************************
-     * MOSTRAR "REGISTRANDO..."
+     * MOSTRAR ESPERA
      ************************************************************/
 
     function mostrarEsperando() {
@@ -656,6 +628,10 @@
         document.getElementById(
           "resultado"
         );
+
+
+      resultado.className =
+        "resultado resultado-error";
 
 
       resultado.style.display =
@@ -699,11 +675,6 @@
         .innerHTML = "";
 
 
-      /*
-       * Mientras esperamos la respuesta,
-       * ocultamos SIGUIENTE.
-       */
-
       document
         .getElementById(
           "btnSiguiente"
@@ -711,7 +682,6 @@
         .classList.add("oculto");
 
     }
-
 
 
     /************************************************************
@@ -723,10 +693,6 @@
       servicio,
       miPeticion
     ) {
-
-      /*
-       * Nombre único para JSONP.
-       */
 
       const callbackName =
         "respuestaPAE_" +
@@ -740,17 +706,8 @@
       let script = null;
 
 
-      /*
-       * CALLBACK DEL SERVIDOR
-       */
-
       window[callbackName] =
         function(respuesta) {
-
-          /*
-           * Si esta respuesta corresponde
-           * a una petición antigua, la ignoramos.
-           */
 
           if (
             miPeticion !==
@@ -765,18 +722,9 @@
           }
 
 
-          /*
-           * Marcamos que la respuesta llegó.
-           */
-
           respuestaRecibida =
             true;
 
-
-          /*
-           * Eliminamos inmediatamente
-           * el callback global.
-           */
 
           try {
 
@@ -793,11 +741,6 @@
           }
 
 
-          /*
-           * Eliminamos el script
-           * que realizó la petición.
-           */
-
           if (
             script &&
             script.parentNode
@@ -809,19 +752,10 @@
           }
 
 
-          /*
-           * Mostramos el resultado.
-           */
-
           mostrarResultado(
             respuesta
           );
 
-
-          /*
-           * SOLO AHORA permitimos
-           * pasar a la siguiente lectura.
-           */
 
           document
             .getElementById(
@@ -831,10 +765,6 @@
 
         };
 
-
-      /*
-       * Construimos la URL.
-       */
 
       const url =
         URL_APPS_SCRIPT +
@@ -846,10 +776,6 @@
         encodeURIComponent(callbackName);
 
 
-      /*
-       * Creamos el script JSONP.
-       */
-
       script =
         document.createElement(
           "script"
@@ -859,19 +785,8 @@
       script.src = url;
 
 
-      /*
-       * Si falla la comunicación,
-       * mostramos error y permitimos
-       * volver a intentar.
-       */
-
       script.onerror =
         function() {
-
-          /*
-           * Si ya llegó una respuesta,
-           * no hacemos nada.
-           */
 
           if (respuestaRecibida) {
             return;
@@ -911,19 +826,11 @@
         };
 
 
-      /*
-       * MUY IMPORTANTE:
-       *
-       * El script se agrega DESPUÉS de haber
-       * bloqueado la interfaz.
-       */
-
       document.body.appendChild(
         script
       );
 
     }
-
 
 
     /************************************************************
@@ -942,6 +849,14 @@
 
       resultado.style.display =
         "block";
+
+
+      /*
+       * Primero quitamos cualquier color anterior.
+       */
+
+      resultado.className =
+        "resultado";
 
 
       const titulo =
@@ -974,18 +889,41 @@
         );
 
 
-      /*
-       * Limpiamos contenido anterior.
-       */
-
       servicio.innerHTML = "";
       fecha.innerHTML = "";
       hora.innerHTML = "";
 
 
-      /*
-       * ERROR GENERAL
-       */
+      /**********************************************************
+       * NO BENEFICIARIO
+       **********************************************************/
+
+      if (
+        respuesta &&
+        respuesta.titulo ===
+          "⚠️ NO BENEFICIARIO PAE"
+      ) {
+
+        resultado.classList.add(
+          "resultado-no-beneficiario"
+        );
+
+
+        titulo.textContent =
+          "⚠️ NO BENEFICIARIO PAE";
+
+
+        nombre.textContent =
+          respuesta.mensaje || "";
+
+
+        return;
+      }
+
+
+      /**********************************************************
+       * ERROR
+       **********************************************************/
 
       if (
         !respuesta ||
@@ -994,6 +932,11 @@
           !respuesta.duplicado
         )
       ) {
+
+        resultado.classList.add(
+          "resultado-error"
+        );
+
 
         titulo.textContent =
           respuesta &&
@@ -1013,13 +956,18 @@
       }
 
 
-      /*
+      /**********************************************************
        * DUPLICADO
-       */
+       **********************************************************/
 
       if (
         respuesta.duplicado === true
       ) {
+
+        resultado.classList.add(
+          "resultado-duplicado"
+        );
+
 
         titulo.textContent =
           "⚠️ ESTUDIANTE YA REGISTRADO";
@@ -1056,9 +1004,14 @@
       }
 
 
-      /*
+      /**********************************************************
        * REGISTRO CORRECTO
-       */
+       **********************************************************/
+
+      resultado.classList.add(
+        "resultado-exito"
+      );
+
 
       titulo.textContent =
         "✅ ESTUDIANTE REGISTRADO";
@@ -1093,7 +1046,6 @@
     }
 
 
-
     /************************************************************
      * ERROR
      ************************************************************/
@@ -1106,12 +1058,18 @@
         false;
 
 
-      document
-        .getElementById(
+      const resultado =
+        document.getElementById(
           "resultado"
-        )
-        .style.display =
-          "block";
+        );
+
+
+      resultado.className =
+        "resultado resultado-error";
+
+
+      resultado.style.display =
+        "block";
 
 
       document
@@ -1151,10 +1109,6 @@
         .innerHTML = "";
 
 
-      /*
-       * Permite volver a intentar.
-       */
-
       document
         .getElementById(
           "btnSiguiente"
@@ -1164,17 +1118,11 @@
     }
 
 
-
     /************************************************************
      * SIGUIENTE
      ************************************************************/
 
     function siguiente() {
-
-      /*
-       * Solo permitimos continuar
-       * cuando la petición anterior terminó.
-       */
 
       if (
         !respuestaRecibida
@@ -1188,10 +1136,6 @@
       }
 
 
-      /*
-       * Ocultamos resultado.
-       */
-
       document
         .getElementById(
           "resultado"
@@ -1199,11 +1143,6 @@
         .style.display =
           "none";
 
-
-      /*
-       * Mostramos nuevamente servicio
-       * y lector.
-       */
 
       document
         .getElementById(
@@ -1231,20 +1170,10 @@
           "Iniciando cámara...";
 
 
-      /*
-       * Liberamos la lectura anterior.
-       */
-
       procesando = false;
 
       respuestaRecibida = false;
 
-
-      /*
-       * Pequeña pausa para asegurar
-       * que la instancia anterior de la cámara
-       * haya terminado completamente.
-       */
 
       setTimeout(
         function() {
@@ -1256,7 +1185,6 @@
       );
 
     }
-
 
 
     /************************************************************
@@ -1292,7 +1220,6 @@
         );
 
     }
-
 
 
     /************************************************************
