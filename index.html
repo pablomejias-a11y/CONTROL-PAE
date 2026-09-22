@@ -92,6 +92,22 @@
       margin-top: 15px;
       box-shadow: 0 3px 12px rgba(0,0,0,0.12);
       text-align: center;
+      border: 2px solid transparent;
+    }
+
+    .resultado.registro-ok {
+      background: #e8f5e9;
+      border-color: #81c784;
+    }
+
+    .resultado.registro-duplicado {
+      background: #fff8e1;
+      border-color: #fbc02d;
+    }
+
+    .resultado.registro-no-beneficiario {
+      background: #ffebee;
+      border-color: #e57373;
     }
 
     .resultado-titulo {
@@ -642,6 +658,28 @@
 
 
     /******************************************************
+     * COLOR DEL RESULTADO
+     ******************************************************/
+
+    function aplicarColorResultado(clase) {
+
+      const resultado =
+        document.getElementById("resultado");
+
+      resultado.classList.remove(
+        "registro-ok",
+        "registro-duplicado",
+        "registro-no-beneficiario"
+      );
+
+      if (clase) {
+        resultado.classList.add(clase);
+      }
+
+    }
+
+
+    /******************************************************
      * MOSTRAR RESULTADO
      ******************************************************/
 
@@ -662,6 +700,8 @@
         document.getElementById(
           "resultado"
         );
+
+      aplicarColorResultado("");
 
       resultado.style.display =
         "block";
@@ -703,6 +743,17 @@
         !respuesta.duplicado
       ) {
 
+        if (
+          respuesta &&
+          String(respuesta.titulo || "")
+            .toUpperCase()
+            .indexOf("NO BENEFICIARIO") >= 0
+        ) {
+          aplicarColorResultado(
+            "registro-no-beneficiario"
+          );
+        }
+
         titulo.textContent =
           respuesta &&
           respuesta.titulo
@@ -736,6 +787,10 @@
       if (
         respuesta.duplicado === true
       ) {
+
+        aplicarColorResultado(
+          "registro-duplicado"
+        );
 
         titulo.textContent =
           "⚠️ ESTUDIANTE YA REGISTRADO";
@@ -779,6 +834,10 @@
       /*
        * REGISTRO CORRECTO
        */
+
+      aplicarColorResultado(
+        "registro-ok"
+      );
 
       titulo.textContent =
         "✅ ESTUDIANTE REGISTRADO";
@@ -840,6 +899,8 @@
         document.getElementById(
           "resultado"
         );
+
+      aplicarColorResultado("");
 
       resultado.style.display =
         "block";
