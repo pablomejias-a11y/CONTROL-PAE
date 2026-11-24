@@ -488,6 +488,10 @@
       const miPeticion =
         idPeticionActual;
 
+      // Este ID identifica este escaneo, incluso si el navegador repite
+      // la misma solicitud HTTP durante la espera de la respuesta.
+      const idSolicitud = generarIdSolicitud();
+
 
       const codigo =
         String(
@@ -550,7 +554,8 @@
       enviarRegistro(
         codigo,
         servicio,
-        miPeticion
+        miPeticion,
+        idSolicitud
       );
 
     }
@@ -685,13 +690,39 @@
 
 
     /************************************************************
+     * IDENTIFICADOR ÚNICO DEL ESCANEO
+     ************************************************************/
+
+    function generarIdSolicitud() {
+
+      // Método preferido en navegadores modernos.
+      try {
+        if (
+          window.crypto &&
+          typeof window.crypto.randomUUID === "function"
+        ) {
+          return window.crypto.randomUUID();
+        }
+      } catch (error) {}
+
+      // Alternativa compatible con navegadores que no ofrecen randomUUID.
+      return "PAE_" +
+        Date.now() + "_" +
+        Math.random().toString(36).slice(2) + "_" +
+        Math.random().toString(36).slice(2);
+
+    }
+
+
+    /************************************************************
      * ENVIAR REGISTRO
      ************************************************************/
 
     function enviarRegistro(
       codigo,
       servicio,
-      miPeticion
+      miPeticion,
+      idSolicitud
     ) {
 
       const callbackName =
@@ -708,6 +739,13 @@
 
       window[callbackName] =
         function(respuesta) {
+
+          if (respuestaRecibida) {
+            console.log(
+              "Respuesta repetida ignorada: esta solicitud ya fue resuelta."
+            );
+            return;
+          }
 
           if (
             miPeticion !==
@@ -772,6 +810,8 @@
         encodeURIComponent(codigo) +
         "&servicio=" +
         encodeURIComponent(servicio) +
+        "&requestId=" +
+        encodeURIComponent(idSolicitud) +
         "&callback=" +
         encodeURIComponent(callbackName);
 
